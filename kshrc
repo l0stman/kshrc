@@ -14,10 +14,27 @@ if tput as; then
     llcorner=m
 fi
 
+# Like pwd but display the $HOME directory as ~
+_pwd ()
+{
+    typeset dir="${PWD:-$(pwd -L)}"
+
+    dir="${dir#$HOME/}"
+    case $dir in
+	"$HOME")
+	    dir=\~ ;;
+	/*)
+	    ;;
+	*)
+	    dir=\~/$dir ;;
+    esac
+    print $dir
+}
+	    
 # Show a truncated current directory if too long.
 _tpwd ()
 {
-    typeset dir="${PWD:-$(pwd)}"
+    typeset dir="$(_pwd)"
     typeset termwidth=${COLUMNS:-$(tput col)}
     typeset prompt="--[${user}@${host}:${tty}]--(${dir})--"
     typeset size=${#prompt}
@@ -34,7 +51,7 @@ _padline ()
 {
     
     typeset padsiz i=0 line=${alt_on}
-    typeset prompt="--[${user}@${host}:${tty}]--(${PWD:-$(pwd)})--"
+    typeset prompt="--[${user}@${host}:${tty}]--($(_pwd))--"
     typeset termwidth=${COLUMNS:-$(tput col)}
     
     padsiz=$(( $termwidth - ${#prompt} ))
