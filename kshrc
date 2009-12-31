@@ -2,6 +2,11 @@ user=$(whoami)
 host=$(hostname -s)
 tty=$(tty | sed s@/dev/@@)
 
+case $(id -u) in
+    0) prompt=\#;;
+    *) prompt=\$;;
+esac
+
 typeset hbar=- ulcorner=- llcorner=- lbracket=[ rbracket=] vbar=\|
 
 if tput as; then
@@ -75,5 +80,5 @@ ${alt_on}${hbar}${hbar}${alt_off}\
 ${alt_on}${hbar}${hbar}${alt_off}\
 
 ${alt_on}${llcorner}${hbar}${alt_off}\
-(\$(date \"+%H:%M\")${alt_on}${vbar}${alt_off}\$)\
+(\$(date \"+%H:%M\")${alt_on}${vbar}${alt_off}${prompt})\
 ${alt_on}${hbar}${alt_off} "
