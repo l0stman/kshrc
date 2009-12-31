@@ -16,14 +16,14 @@ fi
 # Show a truncated current directory if too long.
 _tpwd ()
 {
-    local dir
+    local dir="${PWD}"
     local termwidth=${COLUMNS}
-    local size=$(( ${#_ulprompt} + ${#PWD} + 4))
+    local prompt=$(eval $_prompt)
+    local prompt="--[${user}@${host}:${tty}]--(${PWD})--"
+    local size=${#prompt}
     
     if [[ $size -gt $termwidth ]]; then
-	dir="...$(echo ${PWD} | cut -c $(( 1 + $size - $termwidth + 3 ))-)"
-    else
-	dir="${PWD}"
+	dir="...$(echo ${dir} | cut -c $(( 1 + $size - $termwidth + 3 ))-)"
     fi
 
     echo "$dir"
@@ -32,10 +32,12 @@ _tpwd ()
 # Print a line composed of _padsiz characters
 _padline ()
 {
-    local _padsiz i=0 line=${alt_on} dir=$(_tpwd)
-
-    _padsiz=$(( ${COLUMNS} - ${#_ulprompt} - ${#dir} - 4 ))
-    while [[ $i -lt $_padsiz ]]; do
+    
+    local padsiz i=0 line=${alt_on}
+    local prompt="--[${user}@${host}:${tty}]--(${PWD})--"
+    
+    padsiz=$(( ${COLUMNS} - ${#prompt} ))
+    while [[ $i -lt $padsiz ]]; do
 	line=${line}${hbar}
 	(( i++ ))
     done
@@ -43,23 +45,12 @@ _padline ()
     echo -n $line
 }
 
-_setprompt ()
-{
-    # Upper left prompt
-    _ulprompt="\
+PS1="\
 ${alt_on}${ulcorner}${hbar}${alt_off}\
 [${user}@${host}:${tty}]\
-${alt_on}${hbar}${alt_off}"
-
-    # Upper right prompt
-    _urprompt="\
-${alt_on}${hbar}${alt_off}\
+\$(_padline)\
+${alt_on}${hbar}${hbar}${alt_off}\
 (\$(_tpwd))\
-${alt_on}${hbar}${alt_off}"
+${alt_on}${hbar}${hbar}${alt_off}\
 
-    PS1="\
-${_ulprompt}\$(_padline)${_urprompt}
 ${alt_on}${llcorner}${hbar}${alt_off}\$ "
-}
-
-_setprompt
