@@ -42,7 +42,7 @@ _pwd ()
 _tpwd ()
 {
     typeset dir="$(_pwd)"
-    typeset termwidth=${COLUMNS:-$(tput col)}
+    typeset termwidth=$(tput co)
     typeset prompt="--[${user}@${host}:${tty}]--(${dir})--"
     typeset size=${#prompt}
     
@@ -59,7 +59,7 @@ _padline ()
     
     typeset padsiz i=0 line=${alt_on}
     typeset prompt="--[${user}@${host}:${tty}]--($(_pwd))--"
-    typeset termwidth=${COLUMNS:-$(tput col)}
+    typeset termwidth=$(tput co)
     
     padsiz=$(( $termwidth - ${#prompt} ))
     while [[ $i -lt $padsiz ]]; do
@@ -68,6 +68,15 @@ _padline ()
     done
     line=${line}${alt_off}
     print -n $line
+}
+
+_curs_forward ()
+{
+    typeset left="-($(date +%H:%M)|$)--"
+    typeset right="--($(date "+%a, %d %b"))- "
+    typeset pos=$(( $(tput co) - ${#left} - ${#right} ))
+
+    tput RI $pos
 }
 
 PS1="\
@@ -80,5 +89,11 @@ ${alt_on}${hbar}${hbar}${alt_off}\
 ${alt_on}${hbar}${hbar}${alt_off}\
 
 ${alt_on}${llcorner}${hbar}${alt_off}\
-(\$(date \"+%H:%M\")${alt_on}${vbar}${alt_off}${prompt})\
-${alt_on}${hbar}${alt_off} "
+(\$(date +%H:%M)${alt_on}${vbar}${alt_off}${prompt})\
+${alt_on}${hbar}${alt_off} \
+\$(tput sc)\
+\$(_curs_forward)\
+${alt_on}${hbar}${alt_off}\
+(\$(date \"+%a, %d %b\"))\
+${alt_on}${hbar}${hbar}${alt_off}\
+\$(tput rc)"
