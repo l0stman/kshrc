@@ -6,7 +6,6 @@ typeset alt_on alt_off hbar=- ulcorner=- llcorner=-
 
 if tput as; then
     # Terminal supports alternative charset mode, see termcap(5)
-    tput ae
     alt_on=$(tput as)
     alt_off=$(tput ae)
     hbar=q
@@ -46,7 +45,7 @@ _tpwd ()
     print "$dir"
 }
 
-# Print a line composed of _padsiz characters
+# Line padding such that the upper prompt occupy the terminal width.
 _padline ()
 {
     
