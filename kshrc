@@ -73,15 +73,16 @@ _padline ()
     print -n $line
 }
 
+# Move the cursor forward to print the right prompt.
 _curs_forward ()
 {
-    typeset left="-($(date +%H:%M)|$)--"
-    typeset right="--($(date "+%a, %d %b"))- "
-    typeset pos=$(( $(tput co) - ${#left} - ${#right} ))
+    typeset right_prompt="-($(date "+%a, %d %b"))--"
+    typeset pos=$(( $(tput co) - ${#right_prompt} ))
 
     tput RI $pos
 }
 
+# Add a right prompt using carriage return.
 PS1="\
 ${alt_on}${ulcorner}${hbar}${lbracket}${alt_off}\
 ${user}@${host}:${tty}\
@@ -91,12 +92,12 @@ ${alt_on}${hbar}${hbar}${alt_off}\
 (\$(_tpwd))\
 ${alt_on}${hbar}${urcorner}${alt_off}\
 
-${alt_on}${llcorner}${hbar}${alt_off}\
-(\$(date +%H:%M)${alt_on}${vbar}${alt_off}${prompt})\
-${alt_on}${hbar}${alt_off} \
-\$(tput sc)\
 \$(_curs_forward)\
 ${alt_on}${hbar}${alt_off}\
 (\$(date \"+%a, %d %b\"))\
 ${alt_on}${hbar}${lrcorner}${alt_off}\
-\$(tput cr)\$(tput rc)"
+\$(tput cr)\
+${alt_on}${llcorner}${hbar}${alt_off}\
+(\$(date +%H:%M)${alt_on}${vbar}${alt_off}${prompt})\
+${alt_on}${hbar}${alt_off} "
+
