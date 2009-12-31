@@ -70,7 +70,7 @@ _padline ()
 	(( i++ ))
     done
     line=${line}${alt_off}
-    print -n $line
+    print -n -- $line
 }
 
 # Move the cursor forward to print the right prompt.
@@ -82,7 +82,7 @@ _curs_forward ()
     tput RI $pos
 }
 
-# Add a right prompt using carriage return.
+# Add a right prompt with a clever use of carriage return.
 PS1="\
 ${alt_on}${ulcorner}${hbar}${lbracket}${alt_off}\
 ${user}@${host}:${tty}\
