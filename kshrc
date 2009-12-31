@@ -7,7 +7,8 @@ case $(id -u) in
     *) prompt=\$;;
 esac
 
-typeset hbar=- ulcorner=- llcorner=- lbracket=[ rbracket=] vbar=\|
+typeset hbar=- ulcorner=- llcorner=- lbracket=[ rbracket=] vbar=\| \
+    urcorner=- lrcorner=-
 
 if tput as; then
     # Terminal supports alternative charset mode, see termcap(5)
@@ -17,6 +18,8 @@ if tput as; then
     vbar=x
     ulcorner=l
     llcorner=m
+    urcorner=k
+    lrcorner=j
     lbracket=u
     rbracket=t
 fi
@@ -86,7 +89,7 @@ ${alt_on}${rbracket}${alt_off}\
 \$(_padline)\
 ${alt_on}${hbar}${hbar}${alt_off}\
 (\$(_tpwd))\
-${alt_on}${hbar}${hbar}${alt_off}\
+${alt_on}${hbar}${urcorner}${alt_off}\
 
 ${alt_on}${llcorner}${hbar}${alt_off}\
 (\$(date +%H:%M)${alt_on}${vbar}${alt_off}${prompt})\
@@ -95,5 +98,5 @@ ${alt_on}${hbar}${alt_off} \
 \$(_curs_forward)\
 ${alt_on}${hbar}${alt_off}\
 (\$(date \"+%a, %d %b\"))\
-${alt_on}${hbar}${hbar}${alt_off}\
-\$(tput rc)"
+${alt_on}${hbar}${lrcorner}${alt_off}\
+\$(tput cr)\$(tput rc)"
