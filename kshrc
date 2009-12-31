@@ -2,7 +2,7 @@ user=$(whoami)
 host=$(hostname -s)
 tty=$(tty | sed s@/dev/@@)
 
-local alt_on alt_off hbar=- ulcorner=- llcorner=-
+typeset alt_on alt_off hbar=- ulcorner=- llcorner=-
 
 if tput as; then
     # Terminal supports alternative charset mode, see termcap(5)
@@ -18,7 +18,6 @@ _tpwd ()
 {
     local dir="${PWD}"
     local termwidth=${COLUMNS}
-    local prompt=$(eval $_prompt)
     local prompt="--[${user}@${host}:${tty}]--(${PWD})--"
     local size=${#prompt}
     
@@ -26,7 +25,7 @@ _tpwd ()
 	dir="...$(echo ${dir} | cut -c $(( 1 + $size - $termwidth + 3 ))-)"
     fi
 
-    echo "$dir"
+    print "$dir"
 }
 
 # Print a line composed of _padsiz characters
@@ -42,7 +41,7 @@ _padline ()
 	(( i++ ))
     done
     line=${line}${alt_off}
-    echo -n $line
+    print -n $line
 }
 
 PS1="\
