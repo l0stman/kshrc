@@ -6,6 +6,7 @@ typeset alt_on alt_off hbar=- ulcorner=- llcorner=-
 
 if tput as; then
     # Terminal supports alternative charset mode, see termcap(5)
+    tput ae
     alt_on=$(tput as)
     alt_off=$(tput ae)
     hbar=q
@@ -16,13 +17,13 @@ fi
 # Show a truncated current directory if too long.
 _tpwd ()
 {
-    typeset dir="${PWD}"
-    typeset termwidth=${COLUMNS}
-    typeset prompt="--[${user}@${host}:${tty}]--(${PWD})--"
+    typeset dir="${PWD:-$(pwd)}"
+    typeset termwidth=${COLUMNS:-$(tput col)}
+    typeset prompt="--[${user}@${host}:${tty}]--(${dir})--"
     typeset size=${#prompt}
     
     if [[ $size -gt $termwidth ]]; then
-	dir="...$(echo ${dir} | cut -c $(( 1 + $size - $termwidth + 3 ))-)"
+	dir="...$(print ${dir} | cut -c $(( $size - $termwidth + 4 ))-)"
     fi
 
     print "$dir"
@@ -33,9 +34,10 @@ _padline ()
 {
     
     typeset padsiz i=0 line=${alt_on}
-    typeset prompt="--[${user}@${host}:${tty}]--(${PWD})--"
+    typeset prompt="--[${user}@${host}:${tty}]--(${PWD:-$(pwd)})--"
+    typeset termwidth=${COLUMNS:-$(tput col)}
     
-    padsiz=$(( ${COLUMNS} - ${#prompt} ))
+    padsiz=$(( $termwidth - ${#prompt} ))
     while [[ $i -lt $padsiz ]]; do
 	line=${line}${hbar}
 	(( i++ ))
