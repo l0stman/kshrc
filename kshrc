@@ -2,15 +2,18 @@ user=$(whoami)
 host=$(hostname -s)
 tty=$(tty | sed s@/dev/@@)
 
-typeset alt_on alt_off hbar=- ulcorner=- llcorner=-
+typeset hbar=- ulcorner=- llcorner=- lbracket=[ rbracket=] vbar=\|
 
 if tput as; then
     # Terminal supports alternative charset mode, see termcap(5)
     alt_on=$(tput as)
     alt_off=$(tput ae)
     hbar=q
+    vbar=x
     ulcorner=l
     llcorner=m
+    lbracket=u
+    rbracket=t
 fi
 
 # Like pwd but display the $HOME directory as ~
@@ -63,11 +66,14 @@ _padline ()
 }
 
 PS1="\
-${alt_on}${ulcorner}${hbar}${alt_off}\
-[${user}@${host}:${tty}]\
+${alt_on}${ulcorner}${hbar}${lbracket}${alt_off}\
+${user}@${host}:${tty}\
+${alt_on}${rbracket}${alt_off}\
 \$(_padline)\
 ${alt_on}${hbar}${hbar}${alt_off}\
 (\$(_tpwd))\
 ${alt_on}${hbar}${hbar}${alt_off}\
 
-${alt_on}${llcorner}${hbar}${alt_off}\$ "
+${alt_on}${llcorner}${hbar}${alt_off}\
+(\$(date \"+%H:%M\")${alt_on}${vbar}${alt_off}\$)\
+${alt_on}${hbar}${alt_off} "
