@@ -16,10 +16,10 @@ fi
 # Show a truncated current directory if too long.
 _tpwd ()
 {
-    local dir="${PWD}"
-    local termwidth=${COLUMNS}
-    local prompt="--[${user}@${host}:${tty}]--(${PWD})--"
-    local size=${#prompt}
+    typeset dir="${PWD}"
+    typeset termwidth=${COLUMNS}
+    typeset prompt="--[${user}@${host}:${tty}]--(${PWD})--"
+    typeset size=${#prompt}
     
     if [[ $size -gt $termwidth ]]; then
 	dir="...$(echo ${dir} | cut -c $(( 1 + $size - $termwidth + 3 ))-)"
@@ -32,8 +32,8 @@ _tpwd ()
 _padline ()
 {
     
-    local padsiz i=0 line=${alt_on}
-    local prompt="--[${user}@${host}:${tty}]--(${PWD})--"
+    typeset padsiz i=0 line=${alt_on}
+    typeset prompt="--[${user}@${host}:${tty}]--(${PWD})--"
     
     padsiz=$(( ${COLUMNS} - ${#prompt} ))
     while [[ $i -lt $padsiz ]]; do
