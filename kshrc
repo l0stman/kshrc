@@ -23,8 +23,9 @@ sed -E 's/(.)(.)/\1 \2\
     done
 }
 
-# Use alternative character in the prompt if defined or degrade to
+# Use alternative characters to draw lines if supported or degrade to
 # normal characters if not.
+
 alt_on=$(tput as)
 alt_off=$(tput ae)
 hbar=${altchar[q]:--}
@@ -94,7 +95,10 @@ _curs_forward ()
     tput RI $pos
 }
 
-# Add a right prompt with a clever use of carriage return.
+# This is a two lines prompt using carriage return to have a right
+# prompt too.
+
+# Upper part.
 PS1="\
 ${alt_on}${ulcorner}${hbar}${lbracket}${alt_off}\
 ${user}@${host}:${tty}\
@@ -102,13 +106,25 @@ ${alt_on}${rbracket}${alt_off}\
 \$(_padline)\
 ${alt_on}${hbar}${hbar}${alt_off}\
 (\$(_tpwd))\
-${alt_on}${hbar}${urcorner}${alt_off}\
+${alt_on}${hbar}${urcorner}${alt_off}"
 
+# If the terminal doesn't ignore a newline after the last column and
+# has automatic margin (e.g. cons25), a newline or carriage return is
+# written on the next line.  So don't add a newline and for good
+# mesure, move the cursor to the left before writing cr.
+
+if ! tput am || tput xn; then
+    PS1="${PS1}
+"
+fi
+
+# Lower part
+PS1="${PS1}\
 \$(_curs_forward)\
 ${alt_on}${hbar}${alt_off}\
 (\$(date \"+%a, %d %b\"))\
 ${alt_on}${hbar}${lrcorner}${alt_off}\
-\$(tput cr)\
+$(tput le)$(tput cr)\
 ${alt_on}${llcorner}${hbar}${alt_off}\
 (\$(date +%H:%M)${alt_on}${vbar}${alt_off}${prompt})\
 ${alt_on}${hbar}${alt_off} "
