@@ -7,22 +7,34 @@ case $(id -u) in
     *) prompt=\$;;
 esac
 
-typeset hbar=- ulcorner=- llcorner=- lbracket=[ rbracket=] vbar=\| \
-    urcorner=- lrcorner=-
+# Generate an associative array containing the alternative character
+# set for the terminal.  See termcap (5) for more details.
 
-if tput as; then
-    # Terminal supports alternative charset mode, see termcap(5)
-    alt_on=$(tput as)
-    alt_off=$(tput ae)
-    hbar=q
-    vbar=x
-    ulcorner=l
-    llcorner=m
-    urcorner=k
-    lrcorner=j
-    lbracket=u
-    rbracket=t
-fi
+typeset -A altchar
+
+tput ac |
+sed -E 's/(.)(.)/\1 \2\
+/g' |
+{
+    while read key val; do
+	if [[ -n $key ]]; then
+	    altchar+=([$key]=$val)
+	fi
+    done
+}
+
+# Use alternative character in the prompt if defined or degrade to
+# normal characters if not.
+alt_on=$(tput as)
+alt_off=$(tput ae)
+hbar=${altchar[q]:--}
+vbar=${altchar[x]:-\|}
+ulcorner=${altchar[l]:--}
+llcorner=${altchar[m]:--}
+urcorner=${altchar[k]:--}
+lrcorner=${altchar[j]:--}
+lbracket=${altchar[u]:-\[}
+rbracket=${altchar[t]:-\]}
 
 # Like pwd but display the $HOME directory as ~
 _pwd ()
@@ -40,7 +52,7 @@ _pwd ()
     esac
     print $dir
 }
-	    
+
 # Show a truncated current directory if too long.
 _tpwd ()
 {
@@ -100,4 +112,3 @@ ${alt_on}${hbar}${lrcorner}${alt_off}\
 ${alt_on}${llcorner}${hbar}${alt_off}\
 (\$(date +%H:%M)${alt_on}${vbar}${alt_off}${prompt})\
 ${alt_on}${hbar}${alt_off} "
-
