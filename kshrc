@@ -73,14 +73,14 @@ _tpwd ()
 _padline ()
 {
     
-    typeset padsiz i=0 line=${alt_on}
+    typeset padsiz i line
     typeset prompt="--[${user}@${host}:${tty}]--($(_pwd))--"
     typeset termwidth=$(tput co)
     
     padsiz=$(( $termwidth - ${#prompt} ))
-    while [[ $i -lt $padsiz ]]; do
+    line=${alt_on}
+    for (( i=0; i < $padsiz; i++ )); do
 	line=${line}${hbar}
-	(( i++ ))
     done
     line=${line}${alt_off}
     print -n -- $line
