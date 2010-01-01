@@ -58,26 +58,22 @@ _pwd ()
 _tpwd ()
 {
     typeset dir="$(_pwd)"
-    typeset termwidth=$(tput co)
     typeset prompt="--[${user}@${host}:${tty}]--(${dir})--"
-    typeset size=${#prompt}
+    typeset offset=$(( ${#prompt} - $(tput co) ))
     
-    if [[ $size -gt $termwidth ]]; then
-	dir="...$(print ${dir} | cut -c $(( $size - $termwidth + 4 ))-)"
+    if (( $offset > 0 )) ; then
+	dir="...${dir:$(( $offset + 3 ))}"
     fi
-
     print "$dir"
 }
 
 # Line padding such that the upper prompt occupy the terminal width.
 _padline ()
 {
-    
-    typeset padsiz i line
     typeset prompt="--[${user}@${host}:${tty}]--($(_pwd))--"
-    typeset termwidth=$(tput co)
+    typeset padsiz=$(( $(tput co) - ${#prompt} ))    
+    typeset i line
     
-    padsiz=$(( $termwidth - ${#prompt} ))
     line=${alt_on}
     for (( i=0; i < $padsiz; i++ )); do
 	line=${line}${hbar}
