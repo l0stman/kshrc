@@ -1,3 +1,20 @@
+set -o emacs
+
+# Swap ^W and M-baskspce in emacs editing mode.
+
+typeset -A bindings
+bindings=([$'\027']=$'\E\177' [$'\E\177']=$'\027')
+
+_keybinding ()
+{
+    typeset val=${bindings[${.sh.edchar}]}
+
+    if [[ -n $val ]]; then
+	.sh.edchar=$val
+    fi
+}
+trap _keybinding KEYBD
+
 user=$(whoami)
 host=$(hostname -s)
 tty=$(tty | sed s@/dev/@@)
