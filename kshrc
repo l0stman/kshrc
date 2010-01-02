@@ -71,32 +71,29 @@ function _pwd
     print $dir
 }
 
-# Show a truncated current directory if too long.
-function _tpwd
+# This function is executed before PS1 is referenced.  It sets the
+# variable _dir to the current directory, eventually truncated if too
+# long.  And it stores a line padding in _padline such that the upper
+# prompt occupy the terminal width.
+
+function PS1.get
 {
-    typeset dir="$(_pwd)"
-    typeset prompt="--[${user}@${host}:${tty}]--(${dir})--"
+    _dir="$(_pwd)"
+    typeset prompt="--[${user}@${host}:${tty}]--(${_dir})--"
     typeset offset=$(( ${#prompt} - $(tput co) ))
+    typeset i
     
     if (( $offset > 0 )) ; then
-	dir="...${dir:$(( $offset + 3 ))}"
+	_dir="...${_dir:$(( $offset + 3 ))}"
+	_padline=""
+    else
+	offset=$(( - $offset ))
+	_padline=${alt_on}
+	for (( i=0; i<$offset; i++ )); do
+	    _padline=${_padline}${hbar}
+	done
+	_padline=${_padline}${alt_off}
     fi
-    print "$dir"
-}
-
-# Line padding such that the upper prompt occupy the terminal width.
-function _padline
-{
-    typeset prompt="--[${user}@${host}:${tty}]--($(_pwd))--"
-    typeset padsiz=$(( $(tput co) - ${#prompt} ))    
-    typeset i line
-    
-    line=${alt_on}
-    for (( i=0; i < $padsiz; i++ )); do
-	line=${line}${hbar}
-    done
-    line=${line}${alt_off}
-    print -n -- $line
 }
 
 # Move the cursor forward to print the right prompt.
@@ -116,9 +113,9 @@ PS1="\
 ${alt_on}${ulcorner}${hbar}${lbracket}${alt_off}\
 ${user}@${host}:${tty}\
 ${alt_on}${rbracket}${alt_off}\
-\$(_padline)\
+\${_padline}\
 ${alt_on}${hbar}${hbar}${alt_off}\
-(\$(_tpwd))\
+(\${_dir})\
 ${alt_on}${hbar}${urcorner}${alt_off}"
 
 # If the terminal doesn't ignore a newline after the last column and
