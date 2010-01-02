@@ -5,7 +5,7 @@ set -o emacs
 typeset -A bindings
 bindings=([$'\027']=$'\E\177' [$'\E\177']=$'\027')
 
-_keybinding ()
+function _keybinding
 {
     typeset val=${bindings[${.sh.edchar}]}
 
@@ -55,7 +55,7 @@ lbracket=${altchar[u]:-\[}
 rbracket=${altchar[t]:-\]}
 
 # Like pwd but display the $HOME directory as ~
-_pwd ()
+function _pwd
 {
     typeset dir="${PWD:-$(pwd -L)}"
 
@@ -72,7 +72,7 @@ _pwd ()
 }
 
 # Show a truncated current directory if too long.
-_tpwd ()
+function _tpwd
 {
     typeset dir="$(_pwd)"
     typeset prompt="--[${user}@${host}:${tty}]--(${dir})--"
@@ -85,7 +85,7 @@ _tpwd ()
 }
 
 # Line padding such that the upper prompt occupy the terminal width.
-_padline ()
+function _padline
 {
     typeset prompt="--[${user}@${host}:${tty}]--($(_pwd))--"
     typeset padsiz=$(( $(tput co) - ${#prompt} ))    
@@ -100,7 +100,7 @@ _padline ()
 }
 
 # Move the cursor forward to print the right prompt.
-_curs_forward ()
+function _curs_forward
 {
     typeset right_prompt="-($(date "+%a, %d %b"))--"
     typeset pos=$(( $(tput co) - ${#right_prompt} ))
@@ -127,8 +127,7 @@ ${alt_on}${hbar}${urcorner}${alt_off}"
 # mesure, move the cursor to the left before writing cr.
 
 if ! tput am || tput xn; then
-    PS1="${PS1}
-"
+    PS1="${PS1}$'\n'"
 fi
 
 # Lower part
