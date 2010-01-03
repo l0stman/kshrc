@@ -103,7 +103,6 @@ function PS1.get
     _dir="$(_pwd)"
     typeset uprompt="--[${_user}@${_host}:${_tty}]--(${_dir})--"
     typeset rprompt="-(${_date})--"
-    typeset lprompt="--(${_hour}|$)- "
     integer termwidth=$(tput co)
     integer offset=$(( ${#uprompt} - ${termwidth} ))
     integer i
