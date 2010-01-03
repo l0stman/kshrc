@@ -3,7 +3,7 @@ set -o emacs
 # Swap ^W and M-baskspce in emacs editing mode.
 
 typeset -A bindings
-bindings=([$'\027']=$'\E\177' [$'\E\177']=$'\027')
+bindings=([$'\cw']=$'\E\177' [$'\E\177']=$'\cw')
 
 function _keybinding
 {
