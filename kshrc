@@ -74,13 +74,28 @@ function _pwd
 # This function is executed before PS1 is referenced.  It sets the
 # variable _dir to the current directory, eventually truncated if too
 # long.  And it stores a line padding in _padline such that the upper
-# prompt occupy the terminal width.
+# prompt occupy the terminal width. _rpos is the position of the right
+# prompt. See discipline function in the man page of ksh93.
+
+function _hour.get
+{
+    .sh.value=$(date +%H:%M:%S)
+}
+
+function _date.get
+{
+    .sh.value=$(date "+%a, %d %b")
+}
 
 function PS1.get
 {
+    typeset exit=$?
     _dir="$(_pwd)"
-    typeset prompt="--[${user}@${host}:${tty}]--(${_dir})--"
-    typeset offset=$(( ${#prompt} - $(tput co) ))
+    typeset uprompt="--[${user}@${host}:${tty}]--(${_dir})--"
+    typeset rprompt="-(${_date})--"
+    typeset lprompt="--(${_hour}|$)- "
+    typeset termwidth=$(tput co)
+    typeset offset=$(( ${#uprompt} - ${termwidth} ))
     typeset i
     
     if (( $offset > 0 )) ; then
@@ -94,21 +109,15 @@ function PS1.get
 	done
 	_padline=${_padline}${alt_off}
     fi
-}
-
-# Move the cursor forward to print the right prompt.
-function _curs_forward
-{
-    typeset right_prompt="-($(date "+%a, %d %b"))--"
-    typeset pos=$(( $(tput co) - ${#right_prompt} ))
-
-    tput RI $pos
+        
+    _rpos=$(( $termwidth - ${#rprompt} ))
+    return $exit
 }
 
 # This is a two lines prompt using carriage return to have a right
 # prompt too.
 
-# Upper part.
+# Upper prompt.
 PS1="\
 ${alt_on}${ulcorner}${hbar}${lbracket}${alt_off}\
 ${user}@${host}:${tty}\
@@ -121,19 +130,20 @@ ${alt_on}${hbar}${urcorner}${alt_off}"
 # If the terminal doesn't ignore a newline after the last column and
 # has automatic margin (e.g. cons25), a newline or carriage return is
 # written on the next line.  So don't add a newline and for good
-# mesure, move the cursor to the left before writing cr.
+# mesure, move the cursor to the left before writing cr at the end of
+# a line.
 
 if ! tput am || tput xn; then
     PS1="${PS1}$'\n'"
 fi
 
-# Lower part
+# Lower prompt.
 PS1="${PS1}\
-\$(_curs_forward)\
+\$(tput RI $_rpos)\
 ${alt_on}${hbar}${alt_off}\
-(\$(date \"+%a, %d %b\"))\
+(${_date})\
 ${alt_on}${hbar}${lrcorner}${alt_off}\
 $(tput le)$(tput cr)\
 ${alt_on}${llcorner}${hbar}${alt_off}\
-(\$(date +%H:%M)${alt_on}${vbar}${alt_off}${prompt})\
+(${_hour}${alt_on}${vbar}${alt_off}${prompt})\
 ${alt_on}${hbar}${alt_off} "
