@@ -153,11 +153,11 @@ ${alt_on}${hbar}${urcorner}${alt_off}"
     PS1="${PS1}\
 \$(tput RI $_rpos)\
 ${alt_on}${hbar}${alt_off}\
-(${_date})\
+(\${_date})\
 ${alt_on}${hbar}${lrcorner}${alt_off}\
 $(tput le)$(tput cr)\
 ${alt_on}${llcorner}${hbar}${alt_off}\
-(${_hour}${alt_on}${vbar}${alt_off}${_prompt})\
+(\${_hour}${alt_on}${vbar}${alt_off}${_prompt})\
 ${alt_on}${hbar}${alt_off} "
 }
 
