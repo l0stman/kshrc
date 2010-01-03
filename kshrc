@@ -15,44 +15,54 @@ function _keybinding
 }
 trap _keybinding KEYBD
 
-user=$(whoami)
-host=$(hostname -s)
-tty=$(tty | sed s@/dev/@@)
-
-case $(id -u) in
-    0) prompt=\#;;
-    *) prompt=\$;;
-esac
-
 # Generate an associative array containing the alternative character
 # set for the terminal.  See termcap (5) for more details.
 
 typeset -A altchar
 
-tput ac |
-sed -E 's/(.)(.)/\1 \2\
-/g' |
+function load_alt
 {
-    while read key val; do
-	if [[ -n $key ]]; then
-	    altchar+=([$key]=$val)
-	fi
-    done
+    tput ac |
+    sed -E 's/(.)(.)/\1 \2\
+/g' |
+    {
+	while read key val; do
+	    if [[ -n $key ]]; then
+		altchar+=([$key]=$val)
+	    fi
+	done
+    }
 }
 
-# Use alternative characters to draw lines if supported or degrade to
-# normal characters if not.
+function init_parms
+{
+    _dir=
+    _padline=
+    _rpos=
+    _user=$(whoami)
+    _host=$(hostname -s)
+    _tty=$(tty | sed s@/dev/@@)
 
-alt_on=$(tput as)
-alt_off=$(tput ae)
-hbar=${altchar[q]:--}
-vbar=${altchar[x]:-\|}
-ulcorner=${altchar[l]:--}
-llcorner=${altchar[m]:--}
-urcorner=${altchar[k]:--}
-lrcorner=${altchar[j]:--}
-lbracket=${altchar[u]:-\[}
-rbracket=${altchar[t]:-\]}
+    case $(id -u) in
+	0) _prompt=\#;;
+	*) _prompt=\$;;
+    esac
+    
+    # Use alternative characters to draw lines if supported or degrade
+    # to normal characters if not.
+
+    load_alt
+    alt_on=$(tput as)
+    alt_off=$(tput ae)
+    hbar=${altchar[q]:--}
+    vbar=${altchar[x]:-\|}
+    ulcorner=${altchar[l]:--}
+    llcorner=${altchar[m]:--}
+    urcorner=${altchar[k]:--}
+    lrcorner=${altchar[j]:--}
+    lbracket=${altchar[u]:-\[}
+    rbracket=${altchar[t]:-\]}
+}
 
 # Like pwd but display the $HOME directory as ~
 function _pwd
@@ -89,15 +99,15 @@ function _date.get
 
 function PS1.get
 {
-    typeset exit=$?
+    typeset rc=$?
     _dir="$(_pwd)"
-    typeset uprompt="--[${user}@${host}:${tty}]--(${_dir})--"
+    typeset uprompt="--[${_user}@${_host}:${_tty}]--(${_dir})--"
     typeset rprompt="-(${_date})--"
     typeset lprompt="--(${_hour}|$)- "
-    typeset termwidth=$(tput co)
-    typeset offset=$(( ${#uprompt} - ${termwidth} ))
-    typeset i
-    
+    integer termwidth=$(tput co)
+    integer offset=$(( ${#uprompt} - ${termwidth} ))
+    integer i
+
     if (( $offset > 0 )) ; then
 	_dir="...${_dir:$(( $offset + 3 ))}"
 	_padline=""
@@ -111,39 +121,45 @@ function PS1.get
     fi
         
     _rpos=$(( $termwidth - ${#rprompt} ))
-    return $exit
+    return $rc
 }
 
 # This is a two lines prompt using carriage return to have a right
 # prompt too.
 
-# Upper prompt.
-PS1="\
+function setprompt
+{
+    # Upper prompt.
+    PS1="\
 ${alt_on}${ulcorner}${hbar}${lbracket}${alt_off}\
-${user}@${host}:${tty}\
+${_user}@${_host}:${_tty}\
 ${alt_on}${rbracket}${alt_off}\
 \${_padline}\
 ${alt_on}${hbar}${hbar}${alt_off}\
 (\${_dir})\
 ${alt_on}${hbar}${urcorner}${alt_off}"
 
-# If the terminal doesn't ignore a newline after the last column and
-# has automatic margin (e.g. cons25), a newline or carriage return is
-# written on the next line.  So don't add a newline and for good
-# mesure, move the cursor to the left before writing cr at the end of
-# a line.
+    # If the terminal doesn't ignore a newline after the last column
+    # and has automatic margin (e.g. cons25), a newline or carriage return
+    # if written on the next line.  So don't add a newline and for good
+    # mesure, move the cursor to the left before writing cr at the end of
+    # a line.
 
-if ! tput am || tput xn; then
-    PS1="${PS1}$'\n'"
-fi
+    if ! tput am || tput xn; then
+	PS1="${PS1}$'\n'"
+    fi
 
-# Lower prompt.
-PS1="${PS1}\
+    # Lower prompt.
+    PS1="${PS1}\
 \$(tput RI $_rpos)\
 ${alt_on}${hbar}${alt_off}\
 (${_date})\
 ${alt_on}${hbar}${lrcorner}${alt_off}\
 $(tput le)$(tput cr)\
 ${alt_on}${llcorner}${hbar}${alt_off}\
-(${_hour}${alt_on}${vbar}${alt_off}${prompt})\
+(${_hour}${alt_on}${vbar}${alt_off}${_prompt})\
 ${alt_on}${hbar}${alt_off} "
+}
+
+init_parms
+setprompt
