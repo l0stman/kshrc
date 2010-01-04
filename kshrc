@@ -1,19 +1,5 @@
 set -o emacs
 
-# Swap ^W and M-baskspce in emacs editing mode.
-
-typeset -A bindings
-bindings=([$'\cw']=$'\E\177' [$'\E\177']=$'\cw')
-
-function _keybinding
-{
-    typeset val=${bindings[${.sh.edchar}]}
-
-    if [[ -n $val ]]; then
-	.sh.edchar=$val
-    fi
-}
-
 # Generate an associative array containing the alternative character
 # set for the terminal.  See termcap (5) for more details.
 
@@ -164,7 +150,7 @@ ${alt_on}${llcorner}${hbar}${alt_off}\
 ${alt_on}${hbar}${alt_off} "
 }
 
-# Kill the right prompt if the text reaches it and redraw it if the
+# Erase the right prompt if the text reaches it and redraw it if the
 # text fits in the region between the left prompt and the right one.
 
 function _rpdisplay
@@ -172,6 +158,7 @@ function _rpdisplay
     typeset lprompt="--(${_hour}|$)- "
     integer width=$(( ${_rpos} - ${#lprompt} - 1))
     integer pos=${#.sh.edtext}
+    typeset text
     
     if (( $pos <= $width )); then
 	if (( $pos == $width)); then
@@ -189,12 +176,33 @@ function _rpdisplay
     fi
 }
 
+# Assoctiate a key  with an action.
+typeset -A Keytable
+
+function keybind # key [action]
+{
+    typeset key=$(print -f "%q" "$2")
+    case $# in
+    2)      Keytable[$1]=' .sh.edchar=${.sh.edmode}'"$key"
+            ;;
+    1)      unset Keytable[$1]
+            ;;
+    *)      print -u2 "Usage: $0 key [action]"
+            return 2 # usage errors return 2 by default
+            ;;
+    esac
+}
+
 function _keytrap
 {
-    _keybinding
+    eval "${Keytable[${.sh.edchar}]}"
     _rpdisplay
 }
 trap _keytrap KEYBD
-	
+
+# Swap ^W and M-baskspce in emacs editing mode.
+keybind $'\cw' $'\E\177'
+keybind $'\E\177' $'\cw'
+
 init_parms
 setprompt
