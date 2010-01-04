@@ -7,6 +7,8 @@ typeset -A altchar
 
 function load_alt
 {
+    typeset key val
+    
     tput ac |
     sed -E 's/(.)(.)/\1 \2\
 /g' |
@@ -111,6 +113,7 @@ function PS1.get
     return $rc
 }
 
+# Right prompt.
 function _rprompt.get
 {
     .sh.value="\
@@ -119,8 +122,8 @@ ${alt_on}${hbar}${alt_off}\
 ${alt_on}${hbar}${lrcorner}${alt_off}"
 }
 
-# This is a two lines prompt using carriage return to have a right
-# prompt too.
+# This is a two lines prompt using carriage return to display the
+# right prompt.
 
 function setprompt
 {
@@ -135,10 +138,10 @@ ${alt_on}${hbar}${hbar}${alt_off}\
 ${alt_on}${hbar}${urcorner}${alt_off}"
 
     # If the terminal doesn't ignore a newline after the last column
-    # and has automatic margin (e.g. cons25), a newline or carriage return
-    # if written on the next line.  So don't add a newline and for good
-    # mesure, move the cursor to the left before writing cr at the end of
-    # a line.
+    # and has automatic margin (e.g. cons25), a newline or carriage
+    # return if written will be on the next line.  So don't add a
+    # newline and for good mesure, move the cursor to the left before
+    # writing cr at the end of a line.
 
     if ! tput am || tput xn; then
 	PS1=${PS1}$'\n'
