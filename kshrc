@@ -13,7 +13,6 @@ function _keybinding
 	.sh.edchar=$val
     fi
 }
-trap _keybinding KEYBD
 
 # Generate an associative array containing the alternative character
 # set for the terminal.  See termcap (5) for more details.
@@ -42,7 +41,8 @@ function init_parms
     _user=$(whoami)
     _host=$(hostname -s)
     _tty=$(tty | sed s@/dev/@@)
-
+    _has_rprompt=
+    _rprompt=
     case $(id -u) in
 	0) _prompt=\#;;
 	*) _prompt=\$;;
@@ -99,7 +99,7 @@ function _date.get
 
 function PS1.get
 {
-    typeset rc=$?
+    typeset rc=$?  # save the return value of the last command
     _dir="$(_pwd)"
     typeset uprompt="--[${_user}@${_host}:${_tty}]--(${_dir})--"
     typeset rprompt="-(${_date})--"
@@ -118,8 +118,14 @@ function PS1.get
 	done
 	_padline=${_padline}${alt_off}
     fi
-        
+    
     _rpos=$(( $termwidth - ${#rprompt} ))
+    _rprompt="\
+${alt_on}${hbar}${alt_off}\
+(${_date})\
+${alt_on}${hbar}${lrcorner}${alt_off}"
+    _has_rprompt=yes
+    
     return $rc
 }
 
@@ -151,14 +157,44 @@ ${alt_on}${hbar}${urcorner}${alt_off}"
     # Lower prompt.
     PS1="${PS1}\
 \$(tput RI \$_rpos)\
-${alt_on}${hbar}${alt_off}\
-(\${_date})\
-${alt_on}${hbar}${lrcorner}${alt_off}\
+\${_rprompt}\
 $(tput le)$(tput cr)\
 ${alt_on}${llcorner}${hbar}${alt_off}\
 (\${_hour}${alt_on}${vbar}${alt_off}${_prompt})\
 ${alt_on}${hbar}${alt_off} "
 }
 
+# Kill the right prompt if the text reaches it and redraw it if the
+# text fits in the region between the left prompt and the right one.
+
+function _rpdisplay
+{
+    typeset lprompt="--(${_hour}|$)- "
+    integer width=$(( ${_rpos} - ${#lprompt} - 1))
+    integer pos=${#.sh.edtext}
+    
+    if (( $pos <= $width )); then
+	if (( $pos == $width)); then
+		tput ce
+		_has_rprompt=
+	elif [[ -z $_has_rprompt ]]; then
+	    text=${.sh.edtext}
+	    tput sc; tput vi
+	    tput cr; tput RI $_rpos
+	    print -n -- "${_rprompt}"
+	    tput rc; tput ve
+	    .sh.edtext=$text
+	    _has_rprompt=yes
+	fi
+    fi
+}
+
+function _keytrap
+{
+    _keybinding
+    _rpdisplay
+}
+trap _keytrap KEYBD
+	
 init_parms
 setprompt
