@@ -145,12 +145,12 @@ ${alt_on}${hbar}${urcorner}${alt_off}"
     # a line.
 
     if ! tput am || tput xn; then
-	PS1="${PS1}$'\n'"
+	PS1=${PS1}$'\n'
     fi
 
     # Lower prompt.
     PS1="${PS1}\
-\$(tput RI $_rpos)\
+\$(tput RI \$_rpos)\
 ${alt_on}${hbar}${alt_off}\
 (\${_date})\
 ${alt_on}${hbar}${lrcorner}${alt_off}\
