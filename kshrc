@@ -106,13 +106,17 @@ function PS1.get
     fi
     
     _rpos=$(( $termwidth - ${#rprompt} ))
-    _rprompt="\
-${alt_on}${hbar}${alt_off}\
-(${_date})\
-${alt_on}${hbar}${lrcorner}${alt_off}"
     _has_rprompt=yes
     
     return $rc
+}
+
+function _rprompt.get
+{
+    .sh.value="\
+${alt_on}${hbar}${alt_off}\
+(${_date})\
+${alt_on}${hbar}${lrcorner}${alt_off}"
 }
 
 # This is a two lines prompt using carriage return to have a right
