@@ -1,4 +1,16 @@
+#
+# .kshrc - Korn shell 93 startup file
+#
+
+umask 0022
 set -o emacs
+
+alias h='fc -l'
+alias j=jobs
+alias m=$PAGER
+alias ll='ls -laFo'
+alias l='ls -l'
+alias g='fgrep -i'
 
 # Generate an associative array containing the alternative character
 # set for the terminal.  See termcap (5) for more details.
