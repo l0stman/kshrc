@@ -40,6 +40,7 @@ function init_parms
     _tty=$(tty | sed s@/dev/@@)
     _rprompt=
     _rpos=
+    _cont_prompt=
     case $(id -u) in
 	0) _prompt=\#;;
 	*) _prompt=\$;;
@@ -108,8 +109,8 @@ function PS1.get
     fi
     
     _rpos=$(( $termwidth - ${#rprompt} ))
-    _has_rprompt=yes
-
+    _cont_prompt=
+    
     # Upper prompt.
     .sh.value="\
 ${alt_on}${_ulcorner}${_hbar}${_lbracket}${alt_off}\
@@ -169,6 +170,13 @@ ${alt_on}${_hbar}${alt_off}\
 ${alt_on}${_hbar}${_lrcorner}${alt_off}"
 }
 
+# Continuation prompt
+function PS2.get
+{
+    _cont_prompt=yes
+    .sh.value="${alt_on}${_hbar}${_hbar}${alt_off} "
+}
+
 # Erase the right prompt if the text reaches it and redraw it if the
 # text fits in the region between the left prompt and the right one.
 
@@ -216,7 +224,11 @@ function keybind # key [action]
 function _keytrap
 {
     eval "${Keytable[${.sh.edchar}]}"
-    _rpdisplay
+
+    # Execute only if we're not on a continuation prompt
+    if [[ -z $_cont_prompt ]]; then
+	_rpdisplay
+    fi
 }
 trap _keytrap KEYBD
 
