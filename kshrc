@@ -69,28 +69,19 @@ function _pwd
     print $dir
 }
 
+#### Two lines prompt.
 # This function is executed before PS1 is referenced.  It sets the
 # variable _dir to the current directory, eventually truncated if too
 # long.  And it stores a line padding in _padline such that the upper
 # prompt occupy the terminal width. _rpos is the position of the right
 # prompt. See discipline function in the man page of ksh93.
 
-function _hour.get
-{
-    .sh.value=$(date +%H:%M:%S)
-}
-
-function _date.get
-{
-    .sh.value=$(date "+%a, %d %b")
-}
-
 function PS1.get
 {
     typeset rc=$?  # save the return value of the last command
     _dir="$(_pwd)"
     typeset uprompt="--[${_user}@${_host}:${_tty}]--(${_dir})--"
-    typeset rprompt="-(${_date})--"
+    typeset rprompt="-(${_rstatue})--"
     integer termwidth=$(tput co)
     integer offset=$(( ${#uprompt} - ${termwidth} ))
     integer i
@@ -109,30 +100,13 @@ function PS1.get
     
     _rpos=$(( $termwidth - ${#rprompt} ))
     _has_rprompt=yes
-    
-    return $rc
-}
 
-# Right prompt.
-function _rprompt.get
-{
-    .sh.value="\
-${alt_on}${hbar}${alt_off}\
-(${_date})\
-${alt_on}${hbar}${lrcorner}${alt_off}"
-}
-
-# This is a two lines prompt using carriage return to display the
-# right prompt.
-
-function setprompt
-{
     # Upper prompt.
-    PS1="\
+    .sh.value="\
 ${alt_on}${ulcorner}${hbar}${lbracket}${alt_off}\
 ${_user}@${_host}:${_tty}\
 ${alt_on}${rbracket}${alt_off}\
-\${_padline}\
+${_padline}\
 ${alt_on}${hbar}${hbar}${alt_off}\
 (\${_dir})\
 ${alt_on}${hbar}${urcorner}${alt_off}"
@@ -144,17 +118,40 @@ ${alt_on}${hbar}${urcorner}${alt_off}"
     # writing cr at the end of a line.
 
     if ! tput am || tput xn; then
-	PS1=${PS1}$'\n'
+	.sh.value=${.sh.value}$'\n'
     fi
 
-    # Lower prompt.
-    PS1="${PS1}\
-\$(tput RI \$_rpos)\
+    # Lower prompt using carriage return to display the right prompt.
+    .sh.value="${.sh.value}\
+$(tput RI $_rpos)\
 \${_rprompt}\
 $(tput le)$(tput cr)\
 ${alt_on}${llcorner}${hbar}${alt_off}\
-(\${_hour}${alt_on}${vbar}${alt_off}${_prompt})\
+(\${_lstatue}${alt_on}${vbar}${alt_off}${_prompt})\
 ${alt_on}${hbar}${alt_off} "
+
+    return $rc
+}
+
+# Statue in the left prompt
+function _lstatue.get
+{
+    .sh.value=$(date +%H:%M:%S)
+}
+
+# Statue in the right prompt
+function _rstatue.get
+{
+    .sh.value=$(date "+%a, %d %b")
+}
+
+# Right prompt.
+function _rprompt.get
+{
+    .sh.value="\
+${alt_on}${hbar}${alt_off}\
+(${_rstatue})\
+${alt_on}${hbar}${lrcorner}${alt_off}"
 }
 
 # Erase the right prompt if the text reaches it and redraw it if the
@@ -162,7 +159,7 @@ ${alt_on}${hbar}${alt_off} "
 
 function _rpdisplay
 {
-    typeset lprompt="--(${_hour}|$)- "
+    typeset lprompt="--(${_lstatue}|$)- "
     integer width=$(( ${_rpos} - ${#lprompt} - 1))
     integer pos=${#.sh.edtext}
     typeset text
@@ -212,4 +209,3 @@ keybind $'\cw' $'\E\177'
 keybind $'\E\177' $'\cw'
 
 init_parms
-setprompt
