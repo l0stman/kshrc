@@ -140,6 +140,7 @@ ${alt_on}${_llcorner}${_hbar}${alt_off}\
 (${_lstatue}${alt_on}${_vbar}${alt_off}${_prompt})\
 ${alt_on}${_hbar}${alt_off} "
 
+    tput cr
     return $rc
 }
 
