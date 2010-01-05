@@ -40,14 +40,14 @@ function init_parms
     load_alt
     alt_on=$(tput as)
     alt_off=$(tput ae)
-    hbar=${altchar[q]:--}
-    vbar=${altchar[x]:-\|}
-    ulcorner=${altchar[l]:--}
-    llcorner=${altchar[m]:--}
-    urcorner=${altchar[k]:--}
-    lrcorner=${altchar[j]:--}
-    lbracket=${altchar[u]:-\[}
-    rbracket=${altchar[t]:-\]}
+    _hbar=${altchar[q]:--}
+    _vbar=${altchar[x]:-\|}
+    _ulcorner=${altchar[l]:--}
+    _llcorner=${altchar[m]:--}
+    _urcorner=${altchar[k]:--}
+    _lrcorner=${altchar[j]:--}
+    _lbracket=${altchar[u]:-\[}
+    _rbracket=${altchar[t]:-\]}
 }
 
 # Like pwd but display the $HOME directory as ~
@@ -91,7 +91,7 @@ function PS1.get
 	offset=$(( - $offset ))
 	padline=${alt_on}
 	for (( i=0; i<$offset; i++ )); do
-	    padline=${padline}${hbar}
+	    padline=${padline}${_hbar}
 	done
 	padline=${padline}${alt_off}
     fi
@@ -101,13 +101,13 @@ function PS1.get
 
     # Upper prompt.
     .sh.value="\
-${alt_on}${ulcorner}${hbar}${lbracket}${alt_off}\
+${alt_on}${_ulcorner}${_hbar}${_lbracket}${alt_off}\
 ${_user}@${_host}:${_tty}\
-${alt_on}${rbracket}${alt_off}\
+${alt_on}${_rbracket}${alt_off}\
 ${padline}\
-${alt_on}${hbar}${hbar}${alt_off}\
+${alt_on}${_hbar}${_hbar}${alt_off}\
 (${dir})\
-${alt_on}${hbar}${urcorner}${alt_off}"
+${alt_on}${_hbar}${_urcorner}${alt_off}"
 
     # If the terminal doesn't ignore a newline after the last column
     # and has automatic margin (e.g. cons25), a newline or carriage
@@ -124,9 +124,9 @@ ${alt_on}${hbar}${urcorner}${alt_off}"
 $(tput RI $_rpos)\
 \${_rprompt}\
 $(tput le)$(tput cr)\
-${alt_on}${llcorner}${hbar}${alt_off}\
-(\${_lstatue}${alt_on}${vbar}${alt_off}${_prompt})\
-${alt_on}${hbar}${alt_off} "
+${alt_on}${_llcorner}${_hbar}${alt_off}\
+(\${_lstatue}${alt_on}${_vbar}${alt_off}${_prompt})\
+${alt_on}${_hbar}${alt_off} "
 
     return $rc
 }
@@ -147,9 +147,9 @@ function _rstatue.get
 function _rprompt.get
 {
     .sh.value="\
-${alt_on}${hbar}${alt_off}\
+${alt_on}${_hbar}${alt_off}\
 (${_rstatue})\
-${alt_on}${hbar}${lrcorner}${alt_off}"
+${alt_on}${_hbar}${_lrcorner}${alt_off}"
 }
 
 # Erase the right prompt if the text reaches it and redraw it if the
