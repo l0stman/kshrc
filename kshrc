@@ -68,7 +68,7 @@ function _pwd
 }
 
 #### Two lines prompt.
-# This function is executed before PS1 is referenced. It sets _rpos is
+# This function is executed before PS1 is referenced. It sets _rpos to
 # the position of the right prompt. See discipline function in the man
 # page of ksh93.
 
@@ -122,10 +122,10 @@ ${alt_on}${_hbar}${_urcorner}${alt_off}"
     # Lower prompt using carriage return to display the right prompt.
     .sh.value="${.sh.value}\
 $(tput RI $_rpos)\
-\${_rprompt}\
+${_rprompt}\
 $(tput le)$(tput cr)\
 ${alt_on}${_llcorner}${_hbar}${alt_off}\
-(\${_lstatue}${alt_on}${_vbar}${alt_off}${_prompt})\
+(${_lstatue}${alt_on}${_vbar}${alt_off}${_prompt})\
 ${alt_on}${_hbar}${alt_off} "
 
     return $rc
@@ -140,7 +140,13 @@ function _lstatue.get
 # Statue in the right prompt
 function _rstatue.get
 {
-    .sh.value=$(date "+%a, %d %b")
+    # Use the current branch in a git repository or the current date.
+    typeset b=$(git symbolic-ref HEAD 2>/dev/null)
+    if [[ -n $b ]]; then
+	.sh.value="git:${b#refs/heads/}"
+    else
+	.sh.value=$(date "+%a, %d %b")
+    fi
 }
 
 # Right prompt.
