@@ -23,14 +23,12 @@ function load_alt
 
 function init_parms
 {
-    _dir=
-    _padline=
-    _rpos=
     _user=$(whoami)
     _host=$(hostname -s)
     _tty=$(tty | sed s@/dev/@@)
     _has_rprompt=
     _rprompt=
+    _rpos=
     case $(id -u) in
 	0) _prompt=\#;;
 	*) _prompt=\$;;
@@ -70,32 +68,32 @@ function _pwd
 }
 
 #### Two lines prompt.
-# This function is executed before PS1 is referenced.  It sets the
-# variable _dir to the current directory, eventually truncated if too
-# long.  And it stores a line padding in _padline such that the upper
-# prompt occupy the terminal width. _rpos is the position of the right
-# prompt. See discipline function in the man page of ksh93.
+# This function is executed before PS1 is referenced. It sets _rpos is
+# the position of the right prompt. See discipline function in the man
+# page of ksh93.
 
 function PS1.get
 {
     typeset rc=$?  # save the return value of the last command
-    _dir="$(_pwd)"
-    typeset uprompt="--[${_user}@${_host}:${_tty}]--(${_dir})--"
+    typeset dir="$(_pwd)" padline
+    typeset uprompt="--[${_user}@${_host}:${_tty}]--(${dir})--"
     typeset rprompt="-(${_rstatue})--"
     integer termwidth=$(tput co)
     integer offset=$(( ${#uprompt} - ${termwidth} ))
     integer i
 
+    # Truncate the current directory if too long and define a line
+    # padding such that the upper prompt occupy the terminal width.
     if (( $offset > 0 )) ; then
-	_dir="...${_dir:$(( $offset + 3 ))}"
-	_padline=""
+	dir="...${dir:$(( $offset + 3 ))}"
+	padline=""
     else
 	offset=$(( - $offset ))
-	_padline=${alt_on}
+	padline=${alt_on}
 	for (( i=0; i<$offset; i++ )); do
-	    _padline=${_padline}${hbar}
+	    padline=${padline}${hbar}
 	done
-	_padline=${_padline}${alt_off}
+	padline=${padline}${alt_off}
     fi
     
     _rpos=$(( $termwidth - ${#rprompt} ))
@@ -106,9 +104,9 @@ function PS1.get
 ${alt_on}${ulcorner}${hbar}${lbracket}${alt_off}\
 ${_user}@${_host}:${_tty}\
 ${alt_on}${rbracket}${alt_off}\
-${_padline}\
+${padline}\
 ${alt_on}${hbar}${hbar}${alt_off}\
-(\${_dir})\
+(${dir})\
 ${alt_on}${hbar}${urcorner}${alt_off}"
 
     # If the terminal doesn't ignore a newline after the last column
