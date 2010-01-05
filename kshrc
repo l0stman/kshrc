@@ -5,7 +5,7 @@
 umask 0022
 set -o emacs
 
-alias h='fc -l'
+alias h=history
 alias j=jobs
 alias m=$PAGER
 alias ll='ls -laFo'
@@ -38,7 +38,6 @@ function init_parms
     _user=$(whoami)
     _host=$(hostname -s)
     _tty=$(tty | sed s@/dev/@@)
-    _has_rprompt=
     _rprompt=
     _rpos=
     case $(id -u) in
@@ -178,20 +177,21 @@ function _rpdisplay
     typeset lprompt="--(${_lstatue}|$)- "
     integer width=$(( ${_rpos} - ${#lprompt} - 1))
     integer pos=${#.sh.edtext}
+    typeset -S has_prompt=yes
     typeset text
     
     if (( $pos <= $width )); then
 	if (( $pos == $width)); then
 		tput ce
-		_has_rprompt=
-	elif [[ -z $_has_rprompt ]]; then
+		has_rprompt=
+	elif [[ -z $has_rprompt ]]; then
 	    text=${.sh.edtext}
 	    tput sc; tput vi
 	    tput cr; tput RI $_rpos
 	    print -n -- "${_rprompt}"
 	    tput rc; tput ve
 	    .sh.edtext=$text
-	    _has_rprompt=yes
+	    has_rprompt=yes
 	fi
     fi
 }
