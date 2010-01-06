@@ -151,7 +151,6 @@ ${alt_on}${_llcorner}${_hbar}${alt_off}\
 (${_lstatue}${alt_on}${_vbar}${alt_off}${_prompt})\
 ${alt_on}${_hbar}${alt_off} "
 
-    tput cr
     return $rc
 }
 
@@ -165,12 +164,8 @@ function _lstatue.get
 function _rstatue.get
 {
     # Use the current branch in a git repository or the current date.
-    typeset b=$(git symbolic-ref HEAD 2>/dev/null)
-    if [[ -n $b ]]; then
-	.sh.value="git:${b#refs/heads/}"
-    else
-	.sh.value=$(date "+%a, %d %b")
-    fi
+    typeset b=$(__git_ps1 git:)
+    .sh.value=${b:-$(date "+%a, %d %b")}
 }
 
 # Right prompt.
