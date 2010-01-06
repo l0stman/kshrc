@@ -5,6 +5,10 @@
 umask 0022
 set -o emacs
 
+# History file.
+export HISTFILE=~/.hist$$
+trap 'rm -f $HISTFILE' EXIT
+
 export CDSTACK=32
 export FPATH=$HOME/.funcs
 integer _push_max=${CDSTACK} _push_top=${CDSTACK}
