@@ -1,0 +1,5 @@
+This is a startup script for ksh93.
+Inspired by http://aperiodic.net/phil/prompt/ , it defines a fancy two
+lines prompt.  If we're under a git repository, the current branch
+appears in the right prompt,  otherwise it's the current date.
+It also redefines cd using a stack. Just execute ./install.sh to install.
