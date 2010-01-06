@@ -5,6 +5,15 @@
 umask 0022
 set -o emacs
 
+# Directory manipulation functions.
+export CDSTACK=32
+export FPATH=$HOME/.funcs
+integer _push_max=${CDSTACK} _push_top=${CDSTACK}
+
+unalias cd
+alias cd=_cd
+alias pu=pushd
+alias po=popd
 alias h=history
 alias j=jobs
 alias m=$PAGER

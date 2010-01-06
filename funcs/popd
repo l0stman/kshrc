@@ -1,0 +1,37 @@
+# Uses global parameters _push_max _push_top _push_stack
+
+# Pops the top directory
+function popd
+{
+    typeset dir
+    if    ((_push_top >= _push_max))
+    then  print popd: Nothing to pop.
+          return 1
+    fi
+    case $1 in  
+    "")
+        dir=${_push_stack[_push_top]}
+        case $dir in
+        \~*)   dir=$HOME${dir#\~}
+        esac
+        \cd "$dir" || return 1
+        ;;
+    +[1-9]|+[1-9][0-9])
+        typeset savedir
+        integer i=_push_top$1-1
+        if    ((i >= _push_max))
+        then  print pushd: Directory stack not that deep.
+              return 1
+        fi
+        while ((i > _push_top))
+        do _push_stack[i]=${_push_stack[i-1]}
+              i=i-1
+        done
+        ;;
+    *)  print pushd: Bad directory.
+        return 1
+    esac
+    unset '_push_stack[_push_top]'
+    _push_top=_push_top+1
+    dirs
+}

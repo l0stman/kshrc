@@ -1,0 +1,18 @@
+# Uses global parameter _push_stack
+
+# Display directory stack -- $HOME displayed as ~
+function dirs
+{
+    typeset dir="${PWD#$HOME/}"
+    case $dir in
+    $HOME)
+        dir=\~
+        ;;
+    /*) ;;
+    *)  dir=\~/$dir
+    esac
+    PS3=
+    select i in "$dir" "${_push_stack[@]}"
+    do	:
+    done < /dev/null
+}
