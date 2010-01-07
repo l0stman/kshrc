@@ -1,3 +1,5 @@
+# -*-sh-*-
+
 #
 # .kshrc - Korn shell 93 startup file
 #
