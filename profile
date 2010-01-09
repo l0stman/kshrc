@@ -4,10 +4,10 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/games:/usr/local/sbin:/usr/local/bin:\
 $HOME/bin; export PATH
 
 export BLOCKSIZE=K
-export EDITOR='emacs -nw'
+export EDITOR='emacsclient -a vi'
 export PAGER=more
 export CDPATH=.:$HOME:$HOME/projects
-export HISTEDIT='emacs -nw'
+export HISTEDIT=$EDITOR
 
 # ksh93 will look for ~/.kshrc for interactive shell if ENV is not
 # set.  Set it only for the other shells.
