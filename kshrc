@@ -28,6 +28,7 @@ alias m=$PAGER
 alias ll='ls -laFo'
 alias l='ls -l'
 alias g='fgrep -i'
+alias c='clear'
 
 # Generate an associative array containing the alternative character
 # set for the terminal.  See termcap (5) for more details.
