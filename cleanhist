@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# Delete history files older than maxtime days.
+maxtime=1
+find -E ~ -regex '(.*/)?\.hist[0-9]+$' -depth 1 -Btime +${maxtime} -delete
