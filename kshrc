@@ -39,7 +39,7 @@ typeset -A altchar
 function load_alt
 {
     typeset key val
-    
+
     tput ac |
     sed -E 's/(.)(.)/\1 \2\
 /g' |
@@ -64,7 +64,7 @@ function init_parms
 	0) _prompt=\#;;
 	*) _prompt=\$;;
     esac
-    
+
     # Use alternative characters to draw lines if supported or degrade
     # to normal characters if not.
 
@@ -126,10 +126,10 @@ function PS1.get
 	done
 	padline=${padline}${alt_off}
     fi
-    
+
     _rpos=$(( $termwidth - ${#rprompt} ))
     _cont_prompt=
-    
+
     # Upper prompt.
     .sh.value="\
 ${alt_on}${_ulcorner}${_hbar}${_lbracket}${alt_off}\
@@ -167,6 +167,9 @@ function _lstatue.get
 {
     .sh.value=$(date +%H:%M:%S)
 }
+
+export GIT_PS1_SHOWDIRTYSTATE=yes
+export GIT_PS1_SHOWUNTRACKEDFILES=yes
 
 # Statue in the right prompt
 function _rstatue.get
