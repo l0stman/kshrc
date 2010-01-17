@@ -15,7 +15,7 @@ install -m 744 cleanhist ~/bin
 
 if [ ! -f $CRONTAB ] || ! grep -E '/cleanhist$' $CRONTAB; then
     cat <<EOF > $CRONTAB
-0	22	*	*	*	$HOME/bin/cleanhist
+0	22	*	*	*	$BINDIR/cleanhist
 EOF
     crontab $CRONTAB
 else
