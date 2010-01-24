@@ -52,6 +52,23 @@ function load_alt
     }
 }
 
+typeset -A fg
+typeset -A bg
+
+function load_colors
+{
+    typeset color
+    integer i=0
+
+    for color in black red green brown blue magenta cyan white; do
+        fg+=([$color]=$(tput AF $i))
+        bg+=([$color]=$(tput AB $i))
+        (( i++ ))
+    done
+    fg+=([reset]=$(tput AF 9))
+    bg+=([reset]=$(tput AB 9))
+}
+
 function init_parms
 {
     _user=$(whoami)
@@ -79,6 +96,14 @@ function init_parms
     _lrcorner=${altchar[j]:--}
     _lbracket=${altchar[u]:-\[}
     _rbracket=${altchar[t]:-\]}
+
+    if (( $(tput Co) >= 8 )); then
+        load_colors
+        case $(id -u) in
+            0) _bg=${color[red]};;
+            *) _bg=${color[blue]};;
+        esac
+    fi
 }
 
 # Like pwd but display the $HOME directory as ~

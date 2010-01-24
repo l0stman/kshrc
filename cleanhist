@@ -2,4 +2,4 @@
 
 # Delete history files older than maxtime days.
 maxtime=1
-find -E ~ -regex '(.*/)?\.hist[0-9]+$' -depth 1 -Btime +${maxtime} -delete
+find -E ~ -depth 1 -regex '(.*/)?\.hist[0-9]+$' -Btime +${maxtime} -delete
