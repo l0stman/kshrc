@@ -81,6 +81,7 @@ function init_parms
 	0) _prompt=\#;;
 	*) _prompt=\$;;
     esac
+    _prompt=$(tput md)${_prompt}$(tput me)
 
     # Use alternative characters to draw lines if supported or degrade
     # to normal characters if not.
@@ -97,11 +98,18 @@ function init_parms
     _lbracket=${altchar[u]:-\[}
     _rbracket=${altchar[t]:-\]}
 
-    if (( $(tput Co) >= 8 )); then
+    integer colormax=$(tput Co)
+    if (( ${colormax:-0} >= 8 )); then
         load_colors
         case $(id -u) in
-            0) _bg=${color[red]};;
-            *) _bg=${color[blue]};;
+            0)
+                _bgcolor=${bg[red]}
+                _fgcolor=${fg[white]}
+                ;;
+            *)
+                _bgcolor=${bg[white]}
+                _fgcolor=${fg[black]}
+                ;;
         esac
     fi
 }
@@ -158,11 +166,13 @@ function PS1.get
     # Upper prompt.
     .sh.value="\
 ${alt_on}${_ulcorner}${_hbar}${_lbracket}${alt_off}\
+${_bgcolor}${_fgcolor}\
 ${_user}@${_host}:${_tty}\
+${fg[reset]}${bg[reset]}\
 ${alt_on}${_rbracket}${alt_off}\
 ${padline}\
 ${alt_on}${_hbar}${_hbar}${alt_off}\
-(${dir})\
+$(tput md)(${dir})$(tput me)\
 ${alt_on}${_hbar}${_urcorner}${alt_off}"
 
     # If the terminal doesn't ignore a newline after the last column
@@ -230,7 +240,7 @@ function _rpdisplay
     integer pos=${#.sh.edtext}
     typeset -S has_prompt=yes
     typeset text
-    
+
     if (( $pos <= $width )); then
 	if (( $pos == $width)); then
 		tput ce
