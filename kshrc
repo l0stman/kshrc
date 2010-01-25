@@ -242,16 +242,13 @@ function _rpdisplay
     integer width=$(( ${_rpos} - ${#lprompt} - 1))
     integer pos=${#.sh.edtext}
     typeset -S has_rprompt=yes
-    typeset text
 
     if [[ -z $has_rprompt ]]; then
         if (( $pos < $width )) || _fitscreen $pos $width; then
-            text=${.sh.edtext}
             tput sc; tput vi
             tput cr; tput RI $_rpos
             print -n -- "${_rprompt}"
             tput rc; tput ve
-            .sh.edtext=$text
             has_rprompt=yes
         fi
     elif (( $pos >= $width )) && ! _delchar ${.sh.edchar}; then
