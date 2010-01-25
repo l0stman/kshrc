@@ -254,20 +254,27 @@ function _rpdisplay
             .sh.edtext=$text
             has_rprompt=yes
         fi
-    elif (( $pos >= $width )); then
+    elif (( $pos >= $width )) && ! _delchar ${.sh.edchar}; then
         tput ce
         has_rprompt=
     fi
 }
 
+# Verify if the argument deletes character(s) in the input text.
+function _delchar
+{
+    [[ $1 = $'\010' || $1 = $'\177' || $1 = $'\E\177' || $1 = $'\025' ]]
+    return $?
+}
+
+# Test the effect of latest typed character.  If it deletes a
+# character, try to see if the input text fits the screen again.
 function _fitscreen
 {
     integer pos=$1 width=$2
     typeset ch=${.sh.edchar}
-    typeset BS=$'\010' DEL=$'\177'
 
-    if (( $pos == $width+1 )) &&
-        [[ ${ch} = ${BS} || ${ch} = ${DEL} ]]; then
+    if (( $pos == $width+1 )) && _delchar ${ch}; then
         return 0;
     else
         return 1;
