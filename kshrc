@@ -244,19 +244,33 @@ function _rpdisplay
     typeset -S has_rprompt=yes
     typeset text
 
-    if (( $pos <= $width )); then
-	if (( $pos == $width)); then
-		tput ce
-		has_rprompt=
-	elif [[ -z $has_rprompt ]]; then
-	    text=${.sh.edtext}
-	    tput sc; tput vi
-	    tput cr; tput RI $_rpos
-	    print -n -- "${_rprompt}"
-	    tput rc; tput ve
-	    .sh.edtext=$text
-	    has_rprompt=yes
-	fi
+    if [[ -z $has_rprompt ]]; then
+        if (( $pos < $width )) || _fitscreen $pos $width; then
+            text=${.sh.edtext}
+            tput sc; tput vi
+            tput cr; tput RI $_rpos
+            print -n -- "${_rprompt}"
+            tput rc; tput ve
+            .sh.edtext=$text
+            has_rprompt=yes
+        fi
+    elif (( $pos >= $width )); then
+        tput ce
+        has_rprompt=
+    fi
+}
+
+function _fitscreen
+{
+    integer pos=$1 width=$2
+    typeset ch=${.sh.edchar}
+    typeset BS=$'\010' DEL=$'\177'
+
+    if (( $pos == $width+1 )) &&
+        [[ ${ch} = ${BS} || ${ch} = ${DEL} ]]; then
+        return 0;
+    else
+        return 1;
     fi
 }
 
