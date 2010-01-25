@@ -52,6 +52,9 @@ function load_alt
     }
 }
 
+# Generate two associative arrays containing the background
+# and foreground colors.
+
 typeset -A fg
 typeset -A bg
 
@@ -238,7 +241,7 @@ function _rpdisplay
     typeset lprompt="--(${_lstatue}|$)- "
     integer width=$(( ${_rpos} - ${#lprompt} - 1))
     integer pos=${#.sh.edtext}
-    typeset -S has_prompt=yes
+    typeset -S has_rprompt=yes
     typeset text
 
     if (( $pos <= $width )); then
