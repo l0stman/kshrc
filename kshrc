@@ -244,7 +244,8 @@ function _rpdisplay
     typeset -S has_rprompt=yes
 
     if [[ -z $has_rprompt ]]; then
-        if (( $pos < $width )) || _fitscreen $pos $width; then
+        if (( $pos < $width )) ||
+            ( (($pos == $width+1)) && _delchar ${.sh.edchar} ); then
             tput sc; tput vi
             tput cr; tput RI $_rpos
             print -n -- "${_rprompt}"
@@ -260,22 +261,8 @@ function _rpdisplay
 # Verify if the argument deletes character(s) in the input text.
 function _delchar
 {
-    [[ $1 = $'\010' || $1 = $'\177' || $1 = $'\E\177' || $1 = $'\025' ]]
+    [[ $1 = $'\ch' || $1 = $'\177' || $1 = $'\E\177' || $1 = $'\cw' ]]
     return $?
-}
-
-# Test the effect of latest typed character.  If it deletes a
-# character, try to see if the input text fits the screen again.
-function _fitscreen
-{
-    integer pos=$1 width=$2
-    typeset ch=${.sh.edchar}
-
-    if (( $pos == $width+1 )) && _delchar ${ch}; then
-        return 0;
-    else
-        return 1;
-    fi
 }
 
 # Assoctiate a key  with an action.
