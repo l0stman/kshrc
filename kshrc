@@ -242,28 +242,26 @@ function _rpdisplay
     integer width=$(( ${_rpos} - ${#lprompt} - 1))
     integer pos=${#.sh.edtext}
     typeset -S has_rprompt=yes
+    typeset ch=${.sh.edchar}
 
     if [[ -z $has_rprompt ]]; then
         if (( $pos < $width )) ||
-            ( (($pos == $width+1)) && _delchar ${.sh.edchar} ); then
+            ( (($pos == $width+1)) && [[ -n ${_delchars[$ch]} ]] ); then
             tput sc; tput vi
             tput cr; tput RI $_rpos
             print -n -- "${_rprompt}"
             tput rc; tput ve
             has_rprompt=yes
         fi
-    elif (( $pos >= $width )) && ! _delchar ${.sh.edchar}; then
+    elif (( $pos >= $width )) && [[ -z ${_delchars[$ch]} ]]; then
         tput ce
         has_rprompt=
     fi
 }
 
-# Verify if the argument deletes character(s) in the input text.
-function _delchar
-{
-    [[ $1 = $'\ch' || $1 = $'\177' || $1 = $'\E\177' || $1 = $'\cw' ]]
-    return $?
-}
+# Deletion characters in emacs editing mode and from stty.
+typeset -A _delchars=( [$'\ch']=DEL [$'\177']=BS [$'\E\177']=KILL-REGION\
+ [$'\cw']=BACKWORD-KILL-WORD [$'\cu']=KILL-LINE)
 
 # Assoctiate a key  with an action.
 typeset -A Keytable
