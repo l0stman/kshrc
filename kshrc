@@ -31,7 +31,7 @@ alias g='fgrep -i'
 alias c=clear
 alias ec=emacsclient
 
-# Generate an associative array containing the alternative character
+# Generate an associative array containing the alternative characters
 # set for the terminal.  See termcap (5) for more details.
 
 typeset -A altchar
@@ -233,9 +233,18 @@ function PS2.get
     .sh.value="${alt_on}${_hbar}${_hbar}${alt_off} "
 }
 
+
+# Deletion characters in emacs editing mode and from stty.
+typeset -A _delchars=(
+    [$'\ch']=DEL
+    [$'\177']=BS
+    [$'\E\177']=KILL-REGION
+    [$'\cw']=BACKWORD-KILL-WORD
+    [$'\cu']=KILL-LINE
+)
+
 # Erase the right prompt if the text reaches it and redraw it if the
 # text fits in the region between the left prompt and the right one.
-
 function _rpdisplay
 {
     typeset lprompt="--(${_lstatue}|$)- "
@@ -258,10 +267,6 @@ function _rpdisplay
         has_rprompt=
     fi
 }
-
-# Deletion characters in emacs editing mode and from stty.
-typeset -A _delchars=( [$'\ch']=DEL [$'\177']=BS [$'\E\177']=KILL-REGION\
- [$'\cw']=BACKWORD-KILL-WORD [$'\cu']=KILL-LINE)
 
 # Assoctiate a key  with an action.
 typeset -A Keytable
