@@ -31,7 +31,7 @@ alias g='fgrep -i'
 alias c=clear
 alias ec=emacsclient
 
-# Generate an associative array containing the alternative character
+# Generate an associative array containing the alternative characters
 # set for the terminal.  See termcap (5) for more details.
 
 typeset -A altchar
@@ -52,6 +52,26 @@ function load_alt
     }
 }
 
+# Generate two associative arrays containing the background
+# and foreground colors.
+
+typeset -A fg
+typeset -A bg
+
+function load_colors
+{
+    typeset color
+    integer i=0
+
+    for color in black red green brown blue magenta cyan white; do
+        fg+=([$color]=$(tput AF $i))
+        bg+=([$color]=$(tput AB $i))
+        (( i++ ))
+    done
+    fg+=([reset]=$(tput AF 9))
+    bg+=([reset]=$(tput AB 9))
+}
+
 function init_parms
 {
     _user=$(whoami)
@@ -64,6 +84,7 @@ function init_parms
 	0) _prompt=\#;;
 	*) _prompt=\$;;
     esac
+    _prompt=$(tput md)${_prompt}$(tput me)
 
     # Use alternative characters to draw lines if supported or degrade
     # to normal characters if not.
@@ -79,6 +100,21 @@ function init_parms
     _lrcorner=${altchar[j]:--}
     _lbracket=${altchar[u]:-\[}
     _rbracket=${altchar[t]:-\]}
+
+    integer colormax=$(tput Co)
+    if (( ${colormax:-0} >= 8 )); then
+        load_colors
+        case $(id -u) in
+            0)
+                _bgcolor=${bg[red]}
+                _fgcolor=${fg[white]}
+                ;;
+            *)
+                _bgcolor=${bg[white]}
+                _fgcolor=${fg[black]}
+                ;;
+        esac
+    fi
 }
 
 # Like pwd but display the $HOME directory as ~
@@ -133,11 +169,13 @@ function PS1.get
     # Upper prompt.
     .sh.value="\
 ${alt_on}${_ulcorner}${_hbar}${_lbracket}${alt_off}\
+${_bgcolor}${_fgcolor}\
 ${_user}@${_host}:${_tty}\
+${fg[reset]}${bg[reset]}\
 ${alt_on}${_rbracket}${alt_off}\
 ${padline}\
 ${alt_on}${_hbar}${_hbar}${alt_off}\
-(${dir})\
+$(tput md)(${dir})$(tput me)\
 ${alt_on}${_hbar}${_urcorner}${alt_off}"
 
     # If the terminal doesn't ignore a newline after the last column
@@ -195,30 +233,38 @@ function PS2.get
     .sh.value="${alt_on}${_hbar}${_hbar}${alt_off} "
 }
 
+
+# Deletion characters in emacs editing mode and from stty.
+typeset -A _delchars=(
+    [$'\ch']=DEL
+    [$'\177']=BS
+    [$'\E\177']=KILL-REGION
+    [$'\cw']=BACKWORD-KILL-WORD
+    [$'\cu']=KILL-LINE
+)
+
 # Erase the right prompt if the text reaches it and redraw it if the
 # text fits in the region between the left prompt and the right one.
-
 function _rpdisplay
 {
     typeset lprompt="--(${_lstatue}|$)- "
     integer width=$(( ${_rpos} - ${#lprompt} - 1))
     integer pos=${#.sh.edtext}
-    typeset -S has_prompt=yes
-    typeset text
-    
-    if (( $pos <= $width )); then
-	if (( $pos == $width)); then
-		tput ce
-		has_rprompt=
-	elif [[ -z $has_rprompt ]]; then
-	    text=${.sh.edtext}
-	    tput sc; tput vi
-	    tput cr; tput RI $_rpos
-	    print -n -- "${_rprompt}"
-	    tput rc; tput ve
-	    .sh.edtext=$text
-	    has_rprompt=yes
-	fi
+    typeset -S has_rprompt=yes
+    typeset ch=${.sh.edchar}
+
+    if [[ -z $has_rprompt ]]; then
+        if (( $pos < $width )) ||
+            ( (($pos == $width+1)) && [[ -n ${_delchars[$ch]} ]] ); then
+            tput sc; tput vi
+            tput cr; tput RI $_rpos
+            print -n -- "${_rprompt}"
+            tput rc; tput ve
+            has_rprompt=yes
+        fi
+    elif (( $pos >= $width )) && [[ -z ${_delchars[$ch]} ]]; then
+        tput ce
+        has_rprompt=
     fi
 }
 
