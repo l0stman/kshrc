@@ -277,6 +277,14 @@ function _rpdisplay
     fi
 }
 
+# Set the line status to the command buffer
+function _hardstatus
+{
+    typeset hs=${.sh.edtext}
+
+    print -n $'\E_'${hs}$'\E\\'
+}
+
 # Assoctiate a key  with an action.
 typeset -A Keytable
 
@@ -298,6 +306,9 @@ function _keytrap
 {
     eval "${Keytable[${.sh.edchar}]}"
 
+    if [[ $TERM = screen && ${.sh.edchar} = $'\r' ]]; then
+        _hardstatus
+    fi
     # Execute only if we're not on a continuation prompt
     if [[ -z $_cont_prompt ]]; then
 	_rpdisplay
