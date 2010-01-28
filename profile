@@ -19,3 +19,6 @@ if [ -x /usr/games/fortune ]; then
     fortune
 fi
 
+# Define colors for ls for a dark background and a light grey foreground.
+export LSCOLORS="hxHxcxdxAxefgxAHahBxbx"
+export CLICOLOR=$LSCOLORS
