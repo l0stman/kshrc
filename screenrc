@@ -8,7 +8,7 @@ termcapinfo rxvt-unicode 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
 # Equivalent to the %l escape character
 backtick 1 5 5 load
 
-hardstatus string '%{+b W}load: %{d}%1` %?%{R}>%{r}>%{-b R}>%{r}>%{+b d} %h%:%{r}[%{W}%H%{r}]%? %= '
+hardstatus string '%{+b W}load: %{d}%1` %?%{R}>%{r}>%{-b R}>%{r}>%{+b d} %h%:%{r}[%{W}%H%{r}]%?%<'
 hardstatus alwayslastline
-caption always '%{= Kw}%-Lw%{+b rK}%50>%n%f* %t%{= Kw}%+Lw%<'
+caption always '%{= wk}%-Lw%{+b rK}%50>%n%f* %t%{= wk}%+Lw%<'
 
