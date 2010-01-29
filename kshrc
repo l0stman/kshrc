@@ -277,12 +277,18 @@ function _rpdisplay
     fi
 }
 
-# Set the line status to the command buffer
-function _hardstatus
+# Set the line status to the command buffer and the window title
+# to the command's name.
+function _setscreen
 {
     typeset hs=${.sh.edtext}
+    typeset -S cmd
 
-    print -n $'\E_'${hs}$'\E\\'
+    if [[ -z $_cont_prompt && -n $hs ]]; then
+        cmd=$(basename ${hs%% *})
+    fi
+    print -nR $'\E_'${hs}$'\E\\'
+    print -nR $'\Ek'${cmd}$'\E\\'
 }
 
 # Assoctiate a key  with an action.
@@ -307,7 +313,7 @@ function _keytrap
     eval "${Keytable[${.sh.edchar}]}"
 
     if [[ $TERM = screen && ${.sh.edchar} = $'\r' ]]; then
-        _hardstatus
+        _setscreen
     fi
     # Execute only if we're not on a continuation prompt
     if [[ -z $_cont_prompt ]]; then
