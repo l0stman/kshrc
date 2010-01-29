@@ -1,11 +1,14 @@
-# -*- mode: Fundamental -*-
+# -*- mode: sh -*-
 startup_message off
 escape "^Oo"
 
 # Make screen use 256 colors for urxvt
 termcapinfo rxvt-unicode 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
 
-hardstatus string '%{+b W}load: %{d}%l %?%{R}>%{r}>%{-b R}>%{r}>%{+b d} %h%:%{r}[%{W}%H%{r}]%? %= '
+# Equivalent to the %l escape character
+backtick 1 5 5 load
+
+hardstatus string '%{+b W}load: %{d}%1` %?%{R}>%{r}>%{-b R}>%{r}>%{+b d} %h%:%{r}[%{W}%H%{r}]%? %= '
 hardstatus alwayslastline
 caption always '%{= Kw}%-Lw%{+b rK}%50>%n%f* %t%{= Kw}%+Lw%<'
 

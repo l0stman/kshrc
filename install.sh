@@ -4,15 +4,17 @@ FPATH=~/.funcs
 BINDIR=~/bin
 CRONTAB=~/.crontab
 
-cp kshrc ~/.kshrc
-cp profile ~/.profile
-cp screenrc ~/.screenrc
-if [ ! -d "$FPATH" ]; then
-    mkdir -p "$FPATH"
-fi
-cp -R funcs/ "$FPATH"
+for f in kshrc profile screenrc; do
+    cp $f ~/.$f
+done
+
+install -d $FPATH
+cp -R funcs/ $FPATH
+
 install -d $BINDIR
-install -m 744 cleanhist ~/bin
+for f in bin/*; do
+    install -m 744 $f ~/bin
+done
 
 if [ ! -f $CRONTAB ] || ! grep -E '/cleanhist$' $CRONTAB; then
     cat <<EOF > $CRONTAB

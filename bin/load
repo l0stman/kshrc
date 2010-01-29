@@ -1,0 +1,3 @@
+#!/bin/sh
+
+uptime | awk '{print $8 $9 $10}' | sed 's/,/ /g'
