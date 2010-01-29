@@ -1,0 +1,11 @@
+# -*- mode: Fundamental -*-
+startup_message off
+escape "^Oo"
+
+# Make screen use 256 colors for urxvt
+termcapinfo rxvt-unicode 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
+
+hardstatus string '%{+b W}load: %{d}%l %?%{R}>%{r}>%{-b R}>%{r}>%{+b d} %h%:%{r}[%{W}%H%{r}]%? %= '
+hardstatus alwayslastline
+caption always '%{= Kw}%-Lw%{+b rK}%50>%n%f* %t%{= Kw}%+Lw%<'
+

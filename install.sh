@@ -6,6 +6,7 @@ CRONTAB=~/.crontab
 
 cp kshrc ~/.kshrc
 cp profile ~/.profile
+cp screenrc ~/.screenrc
 if [ ! -d "$FPATH" ]; then
     mkdir -p "$FPATH"
 fi
