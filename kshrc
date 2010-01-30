@@ -278,17 +278,31 @@ function _rpdisplay
 }
 
 # Set the line status to the command buffer and the window title
-# to the command's name.
+# to the command name.
 function _setscreen
 {
-    typeset hs=${.sh.edtext}
-    typeset -S cmd
+    typeset hs=${.sh.edtext/#*(\s)/} # delete leading blanks
+    typeset -A cmds
+    typeset -S cmdname
+    integer i
 
-    if [[ -z $_cont_prompt && -n $hs ]]; then
-        cmd=$(basename ${hs%% *})
+    set -A cmds $hs
+    if [[ -z $_cont_prompt && -n ${cmds[0]} ]]; then
+        if [[ ${cmds[0]} == @(sudo|su) ]]; then
+            # Find the real command name
+            for (( i=1; i < ${#cmds[@]}; i++ )); do
+                if [[ ${cmds[i]} != -* ]]; then
+                    break
+                fi
+            done
+        fi
+        # Ignore variable assignment
+        if [[ -n ${cmds[i]} && ${cmds[i]} != *=* ]]; then
+            cmdname=$(basename ${cmds[i]})
+        fi
     fi
     print -nR $'\E_'${hs}$'\E\\'
-    print -nR $'\Ek'${cmd}$'\E\\'
+    print -nR $'\Ek'${cmdname}$'\E\\'
 }
 
 # Assoctiate a key  with an action.
@@ -312,7 +326,7 @@ function _keytrap
 {
     eval "${Keytable[${.sh.edchar}]}"
 
-    if [[ $TERM = screen && ${.sh.edchar} = $'\r' ]]; then
+    if [[ $TERM == screen && ${.sh.edchar} == $'\r' ]]; then
         _setscreen
     fi
     # Execute only if we're not on a continuation prompt
