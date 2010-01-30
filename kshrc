@@ -282,11 +282,10 @@ function _rpdisplay
 function _setscreen
 {
     typeset hs=${.sh.edtext/#*(\s)/} # delete leading blanks
-    typeset -A cmds
+    typeset -a cmds=($hs)
     typeset -S cmdname
     integer i
 
-    set -A cmds $hs
     if [[ -z $_cont_prompt && -n ${cmds[0]} ]]; then
         if [[ ${cmds[0]} == @(sudo|su) ]]; then
             # Find the real command name
