@@ -282,26 +282,30 @@ function _rpdisplay
 function _setscreen
 {
     typeset hs=${.sh.edtext/#*(\s)/} # delete leading blanks
-    typeset -a cmds=($hs)
-    typeset -S cmdname
-    integer i
+    typeset cmd=${hs/%@(\s)*}
+    typeset args=${hs/#+(\S)/}
+    typeset sudopts=AbEHhKkLlnPSVvg:p:U:u:C:c:
+    typeset -S lastcmd
 
-    if [[ -z $_cont_prompt && -n ${cmds[0]} ]]; then
-        if [[ ${cmds[0]} == @(sudo|su) ]]; then
+    if [[ -z $_cont_prompt && -n $cmd ]]; then
+        cmd=${cmd##*/}
+        if [[ $cmd == sudo ]]; then
             # Find the real command name
-            for (( i=1; i < ${#cmds[@]}; i++ )); do
-                if [[ ${cmds[i]} != -* ]]; then
-                    break
-                fi
+            set -- $args
+            while getopts $sudopts c; do
+                ;               # skip options
             done
+            shift $((OPTIND-1))
+            cmd=${1##*/}
+            cmd=${cmd:-sudo}
         fi
         # Ignore variable assignment
-        if [[ -n ${cmds[i]} && ${cmds[i]} != *=* ]]; then
-            cmdname=$(basename ${cmds[i]})
+        if [[  $cmd != *=* ]]; then
+            lastcmd=$cmd
         fi
     fi
     print -nR $'\E_'${hs}$'\E\\'
-    print -nR $'\Ek'${cmdname}$'\E\\'
+    print -nR $'\Ek'${lastcmd}$'\E\\'
 }
 
 # Assoctiate a key  with an action.
