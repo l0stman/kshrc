@@ -11,7 +11,7 @@ export HISTEDIT='emacsclient -a vi'
 
 # ksh93 will look for ~/.kshrc for interactive shell if ENV is not
 # set.  Set it only for the other shells.
-if [[ $(basename $SHELL) != ksh93 ]]; then
+if [ ${SHELL##*/} != ksh93 ]; then
     export ENV=$HOME/.shrc
 fi
 
