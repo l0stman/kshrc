@@ -64,8 +64,7 @@ function load_alt
 # Generate two associative arrays containing the background
 # and foreground colors.
 
-typeset -A fg
-typeset -A bg
+typeset -A fg bg
 
 function load_colors
 {
@@ -292,9 +291,11 @@ function _setscreen
         if [[ $cmd == sudo ]]; then
             # Find the real command name
             set -- $args
-            while getopts $sudopts c; do
-                ;               # skip options
-            done
+            {
+                while getopts $sudopts c; do
+                    ;               # skip options
+                done
+            } 2>/dev/null
             shift $((OPTIND-1))
             if [[ -n $1 ]]; then
                 cmd=${1##*/}

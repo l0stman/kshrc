@@ -9,5 +9,5 @@ It also redefines cd using a stack.
 * kshrc: startup file for interactive shells.
 * profile: startup file read by a login shell.
 * screenrc: GNU screen startup file.
-* install.sh: install the various files and scripts.  It also add
+* install.sh: install the various files and scripts.  It also adds
 cleanhist to a user crontab.
