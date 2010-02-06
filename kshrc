@@ -7,15 +7,6 @@
 umask 0022
 set -o emacs
 
-# Define colors for the output of ls in a dark background.
-if [ $TERM = cons25 ]; then
-    LSCOLORS="AxHxcxdxhxefgxAHahBxbx"
-else
-    LSCOLORS="hxHxcxdxAxefgxAHahBxbx"
-fi
-export LSCOLORS
-export CLICOLOR=$LSCOLORS
-
 # History file.
 export HISTFILE=~/.hist$$
 trap 'rm -f $HISTFILE' EXIT
