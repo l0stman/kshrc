@@ -232,7 +232,6 @@ function PS2.get
     .sh.value="${alt_on}${_hbar}${_hbar}${alt_off} "
 }
 
-
 # Deletion characters in emacs editing mode and from stty.
 typeset -A _delchars=(
     [$'\ch']=DEL
@@ -277,7 +276,7 @@ function _setscreen
     typeset sudopts=AbEHhKkLlnPSVvg:p:U:u:C:c:
     typeset -S lastcmd
 
-    if [[ -z $_cont_prompt && -n $cmd ]]; then
+    if [[ -n $cmd ]]; then
         cmd=${cmd##*/}
         if [[ $cmd == sudo ]]; then
             # Find the real command name
@@ -322,11 +321,9 @@ function _keytrap
 {
     eval "${Keytable[${.sh.edchar}]}"
 
-    if [[ $TERM == screen && ${.sh.edchar} == $'\r' ]]; then
-        _setscreen
-    fi
     # Execute only if we're not on a continuation prompt
     if [[ -z $_cont_prompt ]]; then
+        [[ $TERM == screen && ${.sh.edchar} == $'\r' ]] && _setscreen
 	_rpdisplay
     fi
 }
