@@ -34,7 +34,7 @@ alias ec=emacsclient
 # Generate an associative array containing the alternative characters
 # set for the terminal.  See termcap (5) for more details.
 
-eval typeset -A altchar=\(`tput ac | sed -E "s/(.)(.)/['\1']='\2' /g"`\)
+eval typeset -A altchar=\($(tput ac | sed -E "s/(.)(.)/['\1']='\2' /g")\)
 
 # Generate two associative arrays containing the background
 # and foreground colors.
