@@ -43,13 +43,11 @@ function load_alt
     tput ac |
     sed -E 's/(.)(.)/\1 \2\
 /g' |
-    {
-	while read key val; do
-	    if [[ -n $key ]]; then
-		altchar+=([$key]=$val)
-	    fi
-	done
-    }
+    while read key val; do
+	if [[ -n $key ]]; then
+	    altchar+=([$key]=$val)
+	fi
+    done
 }
 
 # Generate two associative arrays containing the background
