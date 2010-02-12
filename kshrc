@@ -278,7 +278,7 @@ function _setscreen
 
     if [[ -n $cmd ]]; then
         cmd=${cmd##*/}
-        if [[ $cmd == sudo ]]; then
+        if [[ $cmd == sudo || $cmd == *=* ]]; then
             # Find the real command name
             set -- $args
             {
