@@ -34,21 +34,7 @@ alias ec=emacsclient
 # Generate an associative array containing the alternative characters
 # set for the terminal.  See termcap (5) for more details.
 
-typeset -A altchar
-
-function load_alt
-{
-    typeset key val
-
-    tput ac |
-    sed -E 's/(.)(.)/\1 \2\
-/g' |
-    while read key val; do
-	if [[ -n $key ]]; then
-	    altchar+=([$key]=$val)
-	fi
-    done
-}
+eval typeset -A altchar=\(`tput ac | sed -E "s/(.)(.)/['\1']='\2' /g"`\)
 
 # Generate two associative arrays containing the background
 # and foreground colors.
@@ -86,7 +72,6 @@ function init_parms
     # Use alternative characters to draw lines if supported or degrade
     # to normal characters if not.
 
-    load_alt
     alt_on=$(tput as)
     alt_off=$(tput ae)
     _hbar=${altchar[q]:--}
