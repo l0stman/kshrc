@@ -61,6 +61,7 @@ function init_parms
     _host=$(hostname -s)
     _tty=$(tty | sed s@/dev/@@)
     _rprompt=
+    _lpos=
     _rpos=
     _cont_prompt=
     case $(id -u) in
@@ -118,15 +119,15 @@ function _pwd
 
 #### Two lines prompt.
 # This function is executed before PS1 is referenced. It sets _rpos to
-# the position of the right prompt. See discipline function in the man
-# page of ksh93.
+# the position of the right prompt and _lpos to the position after the
+# left prompt. See discipline function in the man page of ksh93.
 
 function PS1.get
 {
     typeset rc=$?  # save the return value of the last command
     typeset dir="$(_pwd)" padline
     typeset uprompt="--[${_user}@${_host}:${_tty}]--(${dir})--"
-    typeset rprompt="-(${_rstatue})--"
+    typeset rprompt="-(${_rstatue})--" lprompt="--(${_lstatue}|$)- "
     integer termwidth=$(tput co)
     integer offset=$(( ${#uprompt} - ${termwidth} ))
     integer i
@@ -146,6 +147,7 @@ function PS1.get
     fi
 
     _rpos=$(( $termwidth - ${#rprompt} ))
+    _lpos=${#lprompt}
     _cont_prompt=
 
     # Upper prompt.
@@ -228,8 +230,7 @@ typeset -A _delchars=(
 # text fits in the region between the left prompt and the right one.
 function _rpdisplay
 {
-    typeset lprompt="--(${_lstatue}|$)- "
-    integer width=$(( ${_rpos} - ${#lprompt} - 1))
+    integer width=$(( $_rpos - $_lpos - 1))
     integer pos=${#.sh.edtext}
     typeset -S has_rprompt=yes
     typeset ch=${.sh.edchar}
