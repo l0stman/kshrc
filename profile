@@ -11,7 +11,7 @@ export HISTEDIT='emacsclient -a vi'
 
 # Define colors for the output of ls in a dark background.
 export CLICOLOR=yes
-if [ $TERM = cons25 ]; then
+if [ "$TERM" = cons25 ]; then
     LSCOLORS="AxHxcxdxhxefgxAHahBxbx"
 else
     LSCOLORS="hxHxcxdxAxefgxAHahBxbx"
