@@ -12,3 +12,4 @@ hardstatus string '%0`%{+b W}load: %{d}%l %{R}>%{r}>%{-b R}>%{r}>%{+b d} %L=%L>%
 hardstatus alwayslastline
 caption always '%{= wk}%-Lw%{+b rK}%50>%n%f* %t%{= wk}%+Lw%<'
 
+silencewait 60
