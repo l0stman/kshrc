@@ -222,7 +222,7 @@ typeset -A _delchars=(
     [$'\ch']=DEL
     [$'\177']=BS
     [$'\E\177']=KILL-REGION
-    [$'\cw']=BACKWORD-KILL-WORD
+    [$'\cw']=BACKWARD-KILL-WORD
     [$'\cu']=KILL-LINE
 )
 
