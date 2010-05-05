@@ -81,7 +81,7 @@ function __git_ps1
 			if [ "true" = "$(git rev-parse --is-bare-repository 2>/dev/null)" ]; then
 				c="BARE:"
 			else
-				b="GIT_DIR!"
+				b="GIT_DIR"
 			fi
 		elif [ "true" = "$(git rev-parse --is-inside-work-tree 2>/dev/null)" ]; then
 			if [ -n "${GIT_PS1_SHOWDIRTYSTATE-}" ]; then
