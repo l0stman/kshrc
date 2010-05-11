@@ -313,7 +313,7 @@ function _keytrap
 }
 trap _keytrap KEYBD
 
-# Swap ^W and M-baskspce in emacs editing mode.
+# Swap ^W and M-baskspace in emacs editing mode.
 keybind $'\cw' $'\E\177'
 keybind $'\E\177' $'\cw'
 
