@@ -3,7 +3,7 @@ startup_message off
 escape "^Oo"
 
 # Make screen use 256 colors for urxvt
-termcapinfo rxvt-unicode 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
+termcapinfo rxvt* 'Co#256:AF=\E[38;5;%dm:AB=\E[48;5;%dm:tc=rxvt-unicode'
 
 # Add this to the status string to update the status line every 5 seconds.
 backtick 0 5 5 true
