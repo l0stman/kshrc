@@ -30,6 +30,7 @@ alias l='ls -l'
 alias g='fgrep -i'
 alias c=clear
 alias ec=emacsclient
+alias mutt='TERM=rxvt-256color mutt'
 
 # Generate an associative array containing the alternative characters
 # set for the terminal.  See termcap (5) for more details.
