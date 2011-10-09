@@ -8,6 +8,7 @@ export EDITOR=emacsclient
 export PAGER=more
 export CDPATH=.:$HOME:$HOME/projects
 export HISTEDIT='emacsclient -a vi'
+export PAPERSIZE=A4
 
 # Define colors for the output of ls in a dark background.
 export CLICOLOR=yes
