@@ -17,7 +17,7 @@ for f in bin/*; do
 done
 
 if [ ! -f $CRONTAB ] || ! grep -E '/cleanhist$' $CRONTAB; then
-    cat <<EOF > $CRONTAB
+    cat <<EOF >> $CRONTAB
 0	22	*	*	*	$BINDIR/cleanhist
 EOF
     crontab $CRONTAB
