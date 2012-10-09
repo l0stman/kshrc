@@ -6,6 +6,7 @@
 
 umask 0022
 set -o emacs
+set +o multiline
 
 # History file.
 export HISTFILE=~/.hist$$
