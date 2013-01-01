@@ -35,7 +35,7 @@ alias mutt='TERM=rxvt-256color mutt'
 # Generate an associative array containing the alternative characters
 # set for the terminal.  See termcap (5) for more details.
 
-eval typeset -A altchar=\($(tput ac | sed -E "s/(.)(.)/['\1']='\2' /g")\)
+eval typeset -A altchar=\($(tput acsc | sed -E "s/(.)(.)/['\1']='\2' /g")\)
 
 # Generate two associative arrays containing the background
 # and foreground colors.
@@ -48,12 +48,12 @@ function load_colors
     integer i=0
 
     for color in black red green brown blue magenta cyan white; do
-        fg+=([$color]=$(tput AF $i))
-        bg+=([$color]=$(tput AB $i))
+        fg+=([$color]=$(tput setaf $i))
+        bg+=([$color]=$(tput setab $i))
         (( i++ ))
     done
-    fg+=([reset]=$(tput AF 9))
-    bg+=([reset]=$(tput AB 9))
+    fg+=([reset]=$(tput setaf 9))
+    bg+=([reset]=$(tput setab 9))
 }
 
 function init_parms
@@ -85,7 +85,7 @@ function init_parms
     _lbracket=${altchar[u]:-\[}
     _rbracket=${altchar[t]:-\]}
 
-    integer colormax=$(tput Co)
+    integer colormax=$(tput colors)
     if (( ${colormax:-0} >= 8 )); then
         load_colors
         case $(id -u) in
@@ -99,6 +99,9 @@ function init_parms
                 ;;
         esac
     fi
+
+    # Enable alternate char set.
+    tput enacs
 }
 
 # Like pwd but display the $HOME directory as ~
