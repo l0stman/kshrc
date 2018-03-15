@@ -33,6 +33,10 @@ alias c=clear
 alias ec=emacsclient
 alias mutt='TERM=rxvt-256color mutt'
 
+# Don't get fancy if we have a dumb terminal.  This happens for
+# example if we're accessing files remotely through tramp in emacs.
+[[ $TERM == 'dumb' ]] && return 0
+
 # Generate an associative array containing the alternative characters
 # set for the terminal.  See termcap (5) for more details.
 
