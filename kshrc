@@ -4,7 +4,7 @@
 # .kshrc - Korn shell 93 startup file
 #
 
-umask 0022
+umask 0077
 set -o emacs
 set +o multiline
 

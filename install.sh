@@ -13,7 +13,7 @@ cp -R funcs/ $FPATH
 
 install -d $BINDIR
 for f in bin/*; do
-    install -m 744 $f ~/bin
+    install -m 700 $f ~/bin
 done
 
 if [ ! -f $CRONTAB ] || ! grep -E '/cleanhist$' $CRONTAB; then
