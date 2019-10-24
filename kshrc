@@ -17,7 +17,7 @@ export FPATH=$HOME/.funcs
 integer _push_max=${CDSTACK} _push_top=${CDSTACK}
 
 # Directory manipulation functions.
-unalias cd
+unalias cd 2>/dev/null
 alias cd=_cd
 alias pu=pushd
 alias po=popd
