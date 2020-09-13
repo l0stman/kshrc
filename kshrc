@@ -55,6 +55,11 @@ case $(uname) in
         cap_cursleft=le
         cap_colors=Co
         cap_carriage_return=cr
+        cap_save_cursor=sc
+        cap_inv_cursor=civis
+        cap_restore_cursor=rc
+        cap_normal_cursor=cnorm
+        cap_clr_eol=el
         ;;
     Linux)
         # Use terminal capabilities names.
@@ -73,6 +78,11 @@ case $(uname) in
         cap_cursleft=cub1
         cap_colors=colors
         cap_carriage_return=cr
+        cap_save_cursor=sc
+        cap_inv_cursor=vi
+        cap_restore_cursor=rc
+        cap_normal_cursor=ve
+        cap_clr_eol=ce
         ;;
     *)
         echo "WARNING: Unknown OS for fancy prompt, cowardly refuse to proceed"
@@ -288,14 +298,14 @@ function _rpdisplay
     if [[ -z $has_rprompt ]]; then
         if (( $pos < $width )) ||
             ( (($pos == $width+1)) && [[ -n ${_delchars[$ch]} ]] ); then
-            tput sc; tput vi
+            tput $cap_save_cursor; tput $cap_inv_cursor
             tput $cap_carriage_return; tput $cap_mvright $_rpos
             print -n -- "${_rprompt}"
-            tput rc; tput ve
+            tput $cap_restore_cursor; tput $cap_normal_cursor
             has_rprompt=yes
         fi
     elif (( $pos >= $width )) && [[ -z ${_delchars[$ch]} ]]; then
-        tput ce
+        tput $cap_clr_eol
         has_rprompt=
     fi
 }
