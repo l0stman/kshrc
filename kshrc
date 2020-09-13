@@ -31,7 +31,7 @@ alias l='ls -l'
 alias g='fgrep -i'
 alias c=clear
 alias ec=emacsclient
-alias mutt='TERM=rxvt-256color mutt'
+alias mutt='TERM=xterm-256color mutt'
 
 # Don't get fancy if we have a dumb terminal.  This happens for
 # example if we're accessing files remotely through tramp in emacs.
