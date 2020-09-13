@@ -5,11 +5,11 @@ BINDIR=~/bin
 CRONTAB=~/.crontab
 
 for f in kshrc profile screenrc; do
-    cp $f ~/.$f
+    install $f ~/.$f
 done
 
 install -d $FPATH
-cp -R funcs/ $FPATH
+install funcs/* $FPATH
 
 install -d $BINDIR
 for f in bin/*; do
