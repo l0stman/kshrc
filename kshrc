@@ -56,10 +56,10 @@ case $(uname) in
         cap_colors=Co
         cap_carriage_return=cr
         cap_save_cursor=sc
-        cap_inv_cursor=civis
+        cap_inv_cursor=vi
         cap_restore_cursor=rc
-        cap_normal_cursor=cnorm
-        cap_clr_eol=el
+        cap_normal_cursor=ve
+        cap_clr_eol=ce
         ;;
     Linux)
         # Use terminal capabilities names.
@@ -79,10 +79,10 @@ case $(uname) in
         cap_colors=colors
         cap_carriage_return=cr
         cap_save_cursor=sc
-        cap_inv_cursor=vi
+        cap_inv_cursor=civis
         cap_restore_cursor=rc
-        cap_normal_cursor=ve
-        cap_clr_eol=ce
+        cap_normal_cursor=cnorm
+        cap_clr_eol=el
         ;;
     *)
         echo "WARNING: Unknown OS for fancy prompt, cowardly refuse to proceed"
