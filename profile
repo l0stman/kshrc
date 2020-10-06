@@ -19,11 +19,14 @@ else
 fi
 export LSCOLORS
 
-# ksh93 will look for ~/.kshrc for interactive shell if ENV is not
+# ksh will look for ~/.kshrc for interactive shell if ENV is not
 # set.  Set it only for the other shells.
-if [ ${SHELL##*/} != ksh93 ]; then
-    export ENV=$HOME/.shrc
-fi
+case ${SHELL##*/} in
+    ksh93|ksh2020)
+    ;;
+    *)
+        export ENV=$HOME/.shrc;;
+esac
 
 if [ -x /usr/games/fortune ]; then
     fortune
