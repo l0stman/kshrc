@@ -5,20 +5,21 @@
 # This file is licensed under the GPLv2+. Please see COPYING for more
 # information.
 
-_pass_complete_entries () {
-    local prefix="${PASSWORD_STORE_DIR:-$HOME/.password-store/}"
+function _pass_complete_entries
+{
+    typeset prefix="${PASSWORD_STORE_DIR:-$HOME/.password-store/}"
     prefix="${prefix%/}/"
-    local suffix=".gpg"
-    local autoexpand=${1:-0}
+    typeset suffix=".gpg"
+    typeset autoexpand=${1:-0}
 
-    local IFS=$'\n'
-    local items=($(compgen -f $prefix$cur))
+    typeset IFS=$'\n'
+    typeset items=($(cd ${prefix}; compgen -P ${prefix} -fd ${cur}))
 
     # Remember the value of the first item, to see if it is a directory. If
     # it is a directory, then don't add a space to the completion
-    local firstitem=""
+    typeset firstitem=""
     # Use counter, can't use ${#items[@]} as we skip hidden directories
-    local i=0 item
+    typeset i=0 item
 
     for item in ${items[@]}; do
 	[[ $item =~ /\.[^/]*$ ]] && continue
