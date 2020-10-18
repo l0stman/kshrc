@@ -56,7 +56,7 @@ function _pass_complete_entries
     # The only time we want to add a space to the end is if there is only
     # one match, and it is not a directory
     if [[ $i -gt 1 || ( $i -eq 1 && -d $firstitem ) ]]; then
-	compopt -o nospace
+	complete -a setopt nospace
     fi
 }
 
