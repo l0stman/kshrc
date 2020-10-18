@@ -28,8 +28,8 @@ function _pass_complete_entries
 	# autocomplete the subentry as well (recursively)
 	if [[ ${#items[@]} -eq 1 && $autoexpand -eq 1 ]]; then
 	    while [[ -d $item ]]; do
-		local subitems=($(compgen -f "$item/"))
-		local filtereditems=( ) item2
+		typeset subitems=($(compgen -f "$item/"))
+		typeset filtereditems=( ) item2
 		for item2 in "${subitems[@]}"; do
 		    [[ $item2 =~ /\.[^/]*$ ]] && continue
 		    filtereditems+=( "$item2" )
@@ -62,11 +62,11 @@ function _pass_complete_entries
 
 function _pass_complete_folders
 {
-    local prefix="${PASSWORD_STORE_DIR:-$HOME/.password-store/}"
+    typeset prefix="${PASSWORD_STORE_DIR:-$HOME/.password-store/}"
     prefix="${prefix%/}/"
 
-    local IFS=$'\n'
-    local items=($(compgen -d $prefix$cur))
+    typeset IFS=$'\n'
+    typeset items=($(compgen -d $prefix$cur))
     for item in ${items[@]}; do
 	[[ $item == $prefix.* ]] && continue
 	COMPREPLY+=("${item#$prefix}/")
@@ -75,22 +75,22 @@ function _pass_complete_folders
 
 function _pass_complete_keys
 {
-    local GPG="gpg"
+    typeset GPG="gpg"
     which gpg2 &>/dev/null && GPG="gpg2"
 
-    local IFS=$'\n'
+    typeset IFS=$'\n'
     # Extract names and email addresses from gpg --list-keys
-    local keys="$($GPG --list-secret-keys --with-colons | cut -d : -f 10 | sort -u | sed '/^$/d')"
+    typeset keys="$($GPG --list-secret-keys --with-colons | cut -d : -f 10 | sort -u | sed '/^$/d')"
     COMPREPLY+=($(compgen -W "${keys}" -- ${cur}))
 }
 
 function _pass
 {
-    COMPREPLY=()
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    local commands="init ls find grep show insert generate edit rm mv cp git help version ${PASSWORD_STORE_EXTENSION_COMMANDS[*]}"
+    set -A COMPREPLY
+    typeset cur="${COMP_WORDS[COMP_CWORD]}"
+    typeset commands="init ls find grep show insert generate edit rm mv cp git help version ${PASSWORD_STORE_EXTENSION_COMMANDS[*]}"
     if [[ $COMP_CWORD -gt 1 ]]; then
-	local lastarg="${COMP_WORDS[$COMP_CWORD-1]}"
+	typeset lastarg="${COMP_WORDS[$COMP_CWORD-1]}"
 	case "${COMP_WORDS[1]}" in
 	    init)
 		if [[ $lastarg == "-p" || $lastarg == "--path" ]]; then
