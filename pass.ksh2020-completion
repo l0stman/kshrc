@@ -138,6 +138,9 @@ function _pass
 	    "__password_store_extension_complete_${COMP_WORDS[1]}"
 	fi
     else
+        if [[ "${cur}" == ' ' ]]; then
+            cur=''
+        fi
 	COMPREPLY+=($(compgen -W "${commands}" -- ${cur}))
 	_pass_complete_entries 1
     fi
