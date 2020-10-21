@@ -14,8 +14,16 @@ function _pass_complete_entries
     typeset autoexpand=${1:-0}
 
     typeset IFS=$'\n'
-    typeset items=($(cd ${prefix}; compgen -P ${prefix} -fd ${cur}))
+    typeset items
 
+    if [[ -d ${prefix}${cur} ]]; then
+        items=($(cd ${prefix}${cur}; compgen -P ${prefix}${cur} -fd))
+    else
+        typeset w=$(basename ${cur})
+        typeset d=${prefix}${cur%$w}
+        items=($(cd $d; compgen -P $d -fd $w))
+    fi
+    
     # Remember the value of the first item, to see if it is a directory. If
     # it is a directory, then don't add a space to the completion
     typeset firstitem=""
