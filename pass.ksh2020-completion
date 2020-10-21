@@ -7,6 +7,7 @@
 
 function _pass_complete_entries
 {
+    typeset cur="${COMP_WORDS[COMP_CWORD]}"
     typeset prefix="${PASSWORD_STORE_DIR:-$HOME/.password-store/}"
     prefix="${prefix%/}/"
     typeset suffix=".gpg"
@@ -60,6 +61,7 @@ function _pass_complete_entries
 
 function _pass_complete_folders
 {
+    typeset cur="${COMP_WORDS[COMP_CWORD]}"
     typeset prefix="${PASSWORD_STORE_DIR:-$HOME/.password-store/}"
     prefix="${prefix%/}/"
 
@@ -73,6 +75,7 @@ function _pass_complete_folders
 
 function _pass_complete_keys
 {
+    typeset cur="${COMP_WORDS[COMP_CWORD]}"
     typeset GPG="gpg"
     which gpg2 &>/dev/null && GPG="gpg2"
 
