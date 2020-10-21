@@ -137,7 +137,7 @@ function _pass
 	# }
 	#
 	# and add the command to the $PASSWORD_STORE_EXTENSION_COMMANDS array
-	if [[ " ${PASSWORD_STORE_EXTENSION_COMMANDS[*]} " == *" ${COMP_WORDS[1]} "* ]] && type "__password_store_extension_complete_${COMP_WORDS[1]}" &> /dev/null; then
+	if [[ " ${PASSWORD_STORE_EXTENSION_COMMANDS[*]} " == *" ${COMP_WORDS[1]} "* ]] && type "__password_store_extension_complete_${COMP_WORDS[1]}" > /dev/null 2>&1; then
 	    "__password_store_extension_complete_${COMP_WORDS[1]}"
 	fi
     else
