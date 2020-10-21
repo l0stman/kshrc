@@ -27,14 +27,9 @@ function _pass_complete_entries
 	# autocomplete the subentry as well (recursively)
 	if [[ ${#items[@]} -eq 1 && $autoexpand -eq 1 ]]; then
 	    while [[ -d $item ]]; do
-		typeset subitems=($(compgen -f "$item/"))
-		typeset filtereditems=( ) item2
-		for item2 in "${subitems[@]}"; do
-		    [[ $item2 =~ /\.[^/]*$ ]] && continue
-		    filtereditems+=( "$item2" )
-		done
-		if [[ ${#filtereditems[@]} -eq 1 ]]; then
-		    item="${filtereditems[0]}"
+		typeset subitems=($(cd ${item}; compgen -fd))
+		if [[ ${#subitems[@]} -eq 1 ]]; then
+		    item="${subitems[0]}"
 		else
 		    break
 		fi
