@@ -100,7 +100,7 @@ function _pass
 	    init)
 		if [[ $lastarg == "-p" || $lastarg == "--path" ]]; then
 		    _pass_complete_folders
-		    compopt -o nospace
+                    complete -a setopt nospace
 		else
 		    COMPREPLY+=($(compgen -W "-p --path" -- ${cur}))
 		    _pass_complete_keys
