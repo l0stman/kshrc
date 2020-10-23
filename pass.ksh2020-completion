@@ -13,13 +13,14 @@ function _pass_complete_entries
     typeset suffix=".gpg"
     typeset autoexpand=${1:-0}
 
-    typeset IFS=$'\n'
+    typeset ifs=${IFS}
+    export IFS=$'\n'
     typeset items
 
     if [[ -d ${prefix}${cur} ]]; then
         items=($(cd ${prefix}${cur}; compgen -P ${prefix}${cur} -fd))
     else
-        typeset w=$(basename ${cur})
+        typeset w=$(basename "${cur}")
         typeset d=${prefix}${cur%$w}
         items=($(cd $d; compgen -P $d -fd $w))
     fi
@@ -54,6 +55,7 @@ function _pass_complete_entries
 	fi
 	let i+=1
     done
+    IFS=${ifs}
 
     # The only time we want to add a space to the end is if there is only
     # one match, and it is not a directory
