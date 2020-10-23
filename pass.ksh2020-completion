@@ -70,12 +70,15 @@ function _pass_complete_folders
     typeset prefix="${PASSWORD_STORE_DIR:-$HOME/.password-store/}"
     prefix="${prefix%/}/"
 
-    typeset IFS=$'\n'
-    typeset items=($(compgen -d $prefix$cur))
+    typeset w=$(basename "${cur}")
+    typeset d=${prefix}${cur%$w}
+    typeset ifs=${IFS}
+    export IFS=$'\n'
+    typeset items=($(cd $d; compgen -P $d -d $w))
     for item in ${items[@]}; do
-	[[ $item == $prefix.* ]] && continue
 	COMPREPLY+=("${item#$prefix}/")
     done
+    IFS=${ifs}
 }
 
 function _pass_complete_keys
