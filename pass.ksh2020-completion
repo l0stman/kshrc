@@ -36,7 +36,7 @@ function _pass_complete_entries
 	# autocomplete the subentry as well (recursively)
 	if [[ ${#items[@]} -eq 1 && $autoexpand -eq 1 ]]; then
 	    while [[ -d $item ]]; do
-		typeset subitems=($(cd ${item}; compgen -fd))
+		typeset subitems=($(cd ${item}; compgen -P "${item}/" -fd))
 		if [[ ${#subitems[@]} -eq 1 ]]; then
 		    item="${subitems[0]}"
 		else
