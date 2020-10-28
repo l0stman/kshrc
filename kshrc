@@ -114,55 +114,6 @@ proceed"
         done
     }
 
-    function init_parms
-    {
-        user=$(whoami)
-        host=$(hostname -s)
-        tty=$(tty | sed s@/dev/@@)
-        rprompt=
-        lpos=
-        rpos=
-        cont_prompt=
-        case $(id -u) in
-	    0) prompt=\#;;
-	    *) prompt=\$;;
-        esac
-        bold_on=$(tput $cap_bold_on)
-        allattr_off=$(tput $cap_allattr_off)
-        prompt=${bold_on}${prompt}${allattr_off}
-
-        # Use alternative characters to draw lines if supported or degrade
-        # to normal characters if not.
-        alt_start=$(tput $cap_alt_start)
-        alt_end=$(tput $cap_alt_end)
-        hbar=${altchar[q]:--}
-        vbar=${altchar[x]:-\|}
-        ulcorner=${altchar[l]:--}
-        llcorner=${altchar[m]:--}
-        urcorner=${altchar[k]:--}
-        lrcorner=${altchar[j]:--}
-        lbracket=${altchar[u]:-\[}
-        rbracket=${altchar[t]:-\]}
-
-        integer colormax=$(tput $cap_colors)
-        if (( ${colormax:-0} >= 8 )); then
-            load_colors
-            case $(id -u) in
-                0)
-                    bgcolor=${bg[red]}
-                    fgcolor=${fg[white]}
-                    ;;
-                *)
-                    bgcolor=${bg[white]}
-                    fgcolor=${fg[black]}
-                    ;;
-            esac
-        fi
-
-        # Enable alternate char set.
-        tput $cap_alt_on
-    }
-
     # Like pwd but display the $HOME directory as ~
     function pwd
     {
@@ -269,6 +220,51 @@ ${alt_start}${hbar}${lrcorner}${alt_end}"
         print -nR $'\E_'${hs}$'\E\\'
         print -nR $'\Ek'${lastcmd}$'\E\\'
     }
+
+    user=$(whoami)
+    host=$(hostname -s)
+    tty=$(tty | sed s@/dev/@@)
+    lpos=
+    rpos=
+    cont_prompt=
+    case $(id -u) in
+	0) prompt=\#;;
+	*) prompt=\$;;
+    esac
+    bold_on=$(tput $cap_bold_on)
+    allattr_off=$(tput $cap_allattr_off)
+    prompt=${bold_on}${prompt}${allattr_off}
+
+    # Use alternative characters to draw lines if supported or degrade
+    # to normal characters if not.
+    alt_start=$(tput $cap_alt_start)
+    alt_end=$(tput $cap_alt_end)
+    hbar=${altchar[q]:--}
+    vbar=${altchar[x]:-\|}
+    ulcorner=${altchar[l]:--}
+    llcorner=${altchar[m]:--}
+    urcorner=${altchar[k]:--}
+    lrcorner=${altchar[j]:--}
+    lbracket=${altchar[u]:-\[}
+    rbracket=${altchar[t]:-\]}
+
+    integer colormax=$(tput $cap_colors)
+    if (( ${colormax:-0} >= 8 )); then
+        load_colors
+        case $(id -u) in
+            0)
+                bgcolor=${bg[red]}
+                fgcolor=${fg[white]}
+                ;;
+            *)
+                bgcolor=${bg[white]}
+                fgcolor=${fg[black]}
+                ;;
+        esac
+    fi
+
+    # Enable alternate char set.
+    tput $cap_alt_on
 }
 
 
@@ -382,5 +378,3 @@ trap _keytrap KEYBD
 # Swap ^W and M-baskspace in emacs editing mode.
 keybind $'\cw' $'\E\177'
 keybind $'\E\177' $'\cw'
-
-.fp.init_parms
