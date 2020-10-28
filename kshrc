@@ -149,9 +149,9 @@ proceed"
     function rprompt.get
     {
         .sh.value="\
-${alt_start}${hbar}${alt_end}\
-(${rstatue})\
-${alt_start}${hbar}${lrcorner}${alt_end}"
+${.fp.alt_start}${.fp.hbar}${.fp.alt_end}\
+(${.fp.rstatue})\
+${.fp.alt_start}${.fp.hbar}${.fp.lrcorner}${.fp.alt_end}"
     }
 
     # Deletion characters in emacs editing mode and from stty.
