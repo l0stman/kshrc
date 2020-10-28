@@ -37,8 +37,8 @@ alias mutt='TERM=xterm-256color mutt'
 # example if we're accessing files remotely through tramp in emacs.
 [[ $TERM == 'dumb' ]] && return 0
 
-# We define the namespace "fprompt" for our fancy prompt.
-namespace fprompt
+# We define the namespace "fp" for our fancy prompt.
+namespace fp
 {
     case $(uname) in
         FreeBSD)
@@ -274,18 +274,17 @@ ${alt_start}${hbar}${lrcorner}${alt_end}"
 
 #### Two lines prompt.
 # This function is executed before PS1 is referenced. It sets
-# .fprompt.rpos to the position of the right prompt and .fprompt.lpos
+# .fp.rpos to the position of the right prompt and .fp.lpos
 # to the position after the left prompt. See discipline function in
 # the man page of ksh93.
 
 function PS1.get
 {
     typeset rc=$?  # save the return value of the last command
-    typeset dir="$(.fprompt.pwd)" padline
-    typeset uprompt="--[${.fprompt.user}@${.fprompt.host}:${.fprompt.tty}]\
---(${dir})--"
-    typeset rprompt="-(${.fprompt.rstatue})--" lprompt="--(${.fprompt.lstatue}|$)- "
-    integer termwidth=$(tput ${.fprompt.cap_columns})
+    typeset dir="$(.fp.pwd)" padline
+    typeset uprompt="--[${.fp.user}@${.fp.host}:${.fp.tty}]--(${dir})--"
+    typeset rprompt="-(${.fp.rstatue})--" lprompt="--(${.fp.lstatue}|$)- "
+    integer termwidth=$(tput ${.fp.cap_columns})
     integer offset=$(( ${#uprompt} - ${termwidth} ))
     integer i
 
@@ -296,28 +295,28 @@ function PS1.get
 	padline=""
     else
 	offset=$(( - $offset ))
-	padline=${alt_start}
+	padline=${.fp.alt_start}
 	for (( i=0; i<$offset; i++ )); do
-	    padline=${padline}${.fprompt.hbar}
+	    padline=${padline}${.fp.hbar}
 	done
 	padline=${padline}${alt_end}
     fi
 
-    .fprompt.rpos=$(( $termwidth - ${#rprompt} ))
-    .fprompt.lpos=${#lprompt}
-    .fprompt.cont_prompt=
+    .fp.rpos=$(( $termwidth - ${#rprompt} ))
+    .fp.lpos=${#lprompt}
+    .fp.cont_prompt=
 
     # Upper prompt.
     .sh.value="\
-${alt_start}${.fprompt.ulcorner}${.fprompt.hbar}${.fprompt.lbracket}${alt_end}\
-${.fprompt.bgcolor}${.fprompt.fgcolor}\
-${.fprompt.user}@${.fprompt.host}:${.fprompt.tty}\
-${allattr_off}\
-${alt_start}${.fprompt.rbracket}${alt_end}\
+${.fp.alt_start}${.fp.ulcorner}${.fp.hbar}${.fp.lbracket}${.fp.alt_end}\
+${.fp.bgcolor}${.fp.fgcolor}\
+${.fp.user}@${.fp.host}:${.fp.tty}\
+${.fp.allattr_off}\
+${.fp.alt_start}${.fp.rbracket}${.fp.alt_end}\
 ${padline}\
-${alt_start}${.fprompt.hbar}${.fprompt.hbar}${alt_end}\
-${bold_on}(${dir})${allattr_off}\
-${alt_start}${.fprompt.hbar}${.fprompt.urcorner}${alt_end}"
+${.fp.alt_start}${.fp.hbar}${.fp.hbar}${.fp.alt_end}\
+${.fp.bold_on}(${dir})${.fp.allattr_off}\
+${.fp.alt_start}${.fp.hbar}${.fp.urcorner}${.fp.alt_end}"
 
     # If the terminal doesn't ignore a newline after the last column
     # and has automatic margin (e.g. cons25), a newline or carriage
@@ -325,18 +324,18 @@ ${alt_start}${.fprompt.hbar}${.fprompt.urcorner}${alt_end}"
     # newline and for good mesure, move the cursor to the left before
     # writing cr at the end of a line.
 
-    if ! tput ${.fprompt.cap_auto_marg} || tput ${.fprompt.cap_ign_newline}; then
+    if ! tput ${.fp.cap_auto_marg} || tput ${.fp.cap_ign_newline}; then
 	.sh.value=${.sh.value}$'\n'
     fi
 
     # Lower prompt using carriage return to display the right prompt.
     .sh.value="${.sh.value}\
-$(tput ${.fprompt.cap_mvright} $.fprompt.rpos)\
-${.fprompt.rprompt}\
-$(tput ${.fprompt.cap_cursleft})$(tput ${.fprompt.cap_carriage_return})\
-${alt_start}${.fprompt.llcorner}${.fprompt.hbar}${alt_end}\
-(${.fprompt.lstatue}${alt_start}${.fprompt.vbar}${alt_end}${.fprompt.prompt})\
-${alt_start}${.fprompt.hbar}${alt_end} "
+$(tput ${.fp.cap_mvright} ${.fp.rpos})\
+${.fp.rprompt}\
+$(tput ${.fp.cap_cursleft})$(tput ${.fp.cap_carriage_return})\
+${.fp.alt_start}${.fp.llcorner}${.fp.hbar}${.fp.alt_end}\
+(${.fp.lstatue}${.fp.alt_start}${.fp.vbar}${.fp.alt_end}${.fp.prompt})\
+${.fp.alt_start}${.fp.hbar}${.fp.alt_end} "
 
     return $rc
 }
@@ -347,8 +346,8 @@ export GIT_PS1_SHOWUNTRACKEDFILES=yes
 # Continuation prompt
 function PS2.get
 {
-    .fprompt.cont_prompt=yes
-    .sh.value="${alt_start}${.fprompt.hbar}${.fprompt.hbar}${alt_end} "
+    .fp.cont_prompt=yes
+    .sh.value="${.fp.alt_start}${.fp.hbar}${.fp.hbar}${.fp.alt_end} "
 }
 
 # Assoctiate a key  with an action.
@@ -373,9 +372,9 @@ function _keytrap
     eval "${Keytable[${.sh.edchar}]}"
 
     # Execute only if we're not on a continuation prompt
-    if [[ -z ${.fprompt.cont_prompt} ]]; then
-        [[ $TERM == screen && ${.sh.edchar} == $'\r' ]] && .fprompt.setscreen
-	.fprompt.rpdisplay
+    if [[ -z ${.fp.cont_prompt} ]]; then
+        [[ $TERM == screen && ${.sh.edchar} == $'\r' ]] && .fp.setscreen
+	.fp.rpdisplay
     fi
 }
 trap _keytrap KEYBD
@@ -384,4 +383,4 @@ trap _keytrap KEYBD
 keybind $'\cw' $'\E\177'
 keybind $'\E\177' $'\cw'
 
-.fprompt.init_parms
+.fp.init_parms
