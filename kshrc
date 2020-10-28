@@ -295,7 +295,7 @@ function PS1.get
 	for (( i=0; i<$offset; i++ )); do
 	    padline=${padline}${.fp.hbar}
 	done
-	padline=${padline}${alt_end}
+	padline=${padline}${.fp.alt_end}
     fi
 
     .fp.rpos=$(( $termwidth - ${#rprompt} ))
