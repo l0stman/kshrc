@@ -116,45 +116,45 @@ proceed"
 
     function init_parms
     {
-        _user=$(whoami)
-        _host=$(hostname -s)
-        _tty=$(tty | sed s@/dev/@@)
-        _rprompt=
-        _lpos=
-        _rpos=
-        _cont_prompt=
+        user=$(whoami)
+        host=$(hostname -s)
+        tty=$(tty | sed s@/dev/@@)
+        rprompt=
+        lpos=
+        rpos=
+        cont_prompt=
         case $(id -u) in
-	    0) _prompt=\#;;
-	    *) _prompt=\$;;
+	    0) prompt=\#;;
+	    *) prompt=\$;;
         esac
         bold_on=$(tput $cap_bold_on)
         allattr_off=$(tput $cap_allattr_off)
-        _prompt=${bold_on}${_prompt}${allattr_off}
+        prompt=${bold_on}${prompt}${allattr_off}
 
         # Use alternative characters to draw lines if supported or degrade
         # to normal characters if not.
         alt_start=$(tput $cap_alt_start)
         alt_end=$(tput $cap_alt_end)
-        _hbar=${altchar[q]:--}
-        _vbar=${altchar[x]:-\|}
-        _ulcorner=${altchar[l]:--}
-        _llcorner=${altchar[m]:--}
-        _urcorner=${altchar[k]:--}
-        _lrcorner=${altchar[j]:--}
-        _lbracket=${altchar[u]:-\[}
-        _rbracket=${altchar[t]:-\]}
+        hbar=${altchar[q]:--}
+        vbar=${altchar[x]:-\|}
+        ulcorner=${altchar[l]:--}
+        llcorner=${altchar[m]:--}
+        urcorner=${altchar[k]:--}
+        lrcorner=${altchar[j]:--}
+        lbracket=${altchar[u]:-\[}
+        rbracket=${altchar[t]:-\]}
 
         integer colormax=$(tput $cap_colors)
         if (( ${colormax:-0} >= 8 )); then
             load_colors
             case $(id -u) in
                 0)
-                    _bgcolor=${bg[red]}
-                    _fgcolor=${fg[white]}
+                    bgcolor=${bg[red]}
+                    fgcolor=${fg[white]}
                     ;;
                 *)
-                    _bgcolor=${bg[white]}
-                    _fgcolor=${fg[black]}
+                    bgcolor=${bg[white]}
+                    fgcolor=${fg[black]}
                     ;;
             esac
         fi
@@ -164,9 +164,9 @@ proceed"
     }
 
     # Like pwd but display the $HOME directory as ~
-    function _pwd
+    function pwd
     {
-        typeset dir="${PWD:-$(pwd -L)}"
+        typeset dir="${PWD:-$(command pwd -L)}"
 
         dir="${dir#$HOME/}"
         case $dir in
@@ -181,13 +181,13 @@ proceed"
     }
 
     # Statue in the left prompt
-    function _lstatue.get
+    function lstatue.get
     {
         .sh.value=$(date +%H:%M:%S)
     }
 
     # Statue in the right prompt
-    function _rstatue.get
+    function rstatue.get
     {
         # Use the current branch in a git repository or the current date.
         typeset b=$(__git_ps1 git:)
@@ -195,16 +195,16 @@ proceed"
     }
 
     # Right prompt.
-    function _rprompt.get
+    function rprompt.get
     {
         .sh.value="\
-${alt_start}${_hbar}${alt_end}\
-(${_rstatue})\
-${alt_start}${_hbar}${_lrcorner}${alt_end}"
+${alt_start}${hbar}${alt_end}\
+(${rstatue})\
+${alt_start}${hbar}${lrcorner}${alt_end}"
     }
 
     # Deletion characters in emacs editing mode and from stty.
-    typeset -A _delchars=(
+    typeset -A delchars=(
         [$'\ch']=DEL
         [$'\177']=BS
         [$'\E\177']=KILL-REGION
@@ -214,23 +214,23 @@ ${alt_start}${_hbar}${_lrcorner}${alt_end}"
 
     # Erase the right prompt if the text reaches it and redraw it if the
     # text fits in the region between the left prompt and the right one.
-    function _rpdisplay
+    function rpdisplay
     {
-        integer width=$(( $_rpos - $_lpos - 1))
+        integer width=$(( $rpos - $lpos - 1))
         integer pos=${#.sh.edtext}
         typeset -S has_rprompt=yes
         typeset ch=${.sh.edchar}
 
         if [[ -z $has_rprompt ]]; then
             if (( $pos < $width )) ||
-                   ( (($pos == $width+1)) && [[ -n ${_delchars[$ch]} ]] ); then
+                   ( (($pos == $width+1)) && [[ -n ${delchars[$ch]} ]] ); then
                 tput $cap_save_cursor; tput $cap_inv_cursor
-                tput $cap_carriage_return; tput $cap_mvright $_rpos
-                print -n -- "${_rprompt}"
+                tput $cap_carriage_return; tput $cap_mvright $rpos
+                print -n -- "${rprompt}"
                 tput $cap_restore_cursor; tput $cap_normal_cursor
                 has_rprompt=yes
             fi
-        elif (( $pos >= $width )) && [[ -z ${_delchars[$ch]} ]]; then
+        elif (( $pos >= $width )) && [[ -z ${delchars[$ch]} ]]; then
             tput $cap_clr_eol
             has_rprompt=
         fi
@@ -238,7 +238,7 @@ ${alt_start}${_hbar}${_lrcorner}${alt_end}"
 
     # Set the line status to the command buffer and the window title
     # to the command name.
-    function _setscreen
+    function setscreen
     {
         typeset hs=${.sh.edtext/#*(\s)/} # delete leading blanks
         typeset cmd=${hs/%@(\s)*}
@@ -273,17 +273,19 @@ ${alt_start}${_hbar}${_lrcorner}${alt_end}"
 
 
 #### Two lines prompt.
-# This function is executed before PS1 is referenced. It sets _rpos to
-# the position of the right prompt and _lpos to the position after the
-# left prompt. See discipline function in the man page of ksh93.
+# This function is executed before PS1 is referenced. It sets
+# .fprompt.rpos to the position of the right prompt and .fprompt.lpos
+# to the position after the left prompt. See discipline function in
+# the man page of ksh93.
 
 function PS1.get
 {
     typeset rc=$?  # save the return value of the last command
-    typeset dir="$(.fprompt._pwd)" padline
-    typeset uprompt="--[${_user}@${_host}:${_tty}]--(${dir})--"
-    typeset rprompt="-(${_rstatue})--" lprompt="--(${_lstatue}|$)- "
-    integer termwidth=$(tput $cap_columns)
+    typeset dir="$(.fprompt.pwd)" padline
+    typeset uprompt="--[${.fprompt.user}@${.fprompt.host}:${.fprompt.tty}]\
+--(${dir})--"
+    typeset rprompt="-(${.fprompt.rstatue})--" lprompt="--(${.fprompt.lstatue}|$)- "
+    integer termwidth=$(tput ${.fprompt.cap_columns})
     integer offset=$(( ${#uprompt} - ${termwidth} ))
     integer i
 
@@ -296,26 +298,26 @@ function PS1.get
 	offset=$(( - $offset ))
 	padline=${alt_start}
 	for (( i=0; i<$offset; i++ )); do
-	    padline=${padline}${_hbar}
+	    padline=${padline}${.fprompt.hbar}
 	done
 	padline=${padline}${alt_end}
     fi
 
-    _rpos=$(( $termwidth - ${#rprompt} ))
-    _lpos=${#lprompt}
-    _cont_prompt=
+    .fprompt.rpos=$(( $termwidth - ${#rprompt} ))
+    .fprompt.lpos=${#lprompt}
+    .fprompt.cont_prompt=
 
     # Upper prompt.
     .sh.value="\
-${alt_start}${_ulcorner}${_hbar}${_lbracket}${alt_end}\
-${_bgcolor}${_fgcolor}\
-${_user}@${_host}:${_tty}\
+${alt_start}${.fprompt.ulcorner}${.fprompt.hbar}${.fprompt.lbracket}${alt_end}\
+${.fprompt.bgcolor}${.fprompt.fgcolor}\
+${.fprompt.user}@${.fprompt.host}:${.fprompt.tty}\
 ${allattr_off}\
-${alt_start}${_rbracket}${alt_end}\
+${alt_start}${.fprompt.rbracket}${alt_end}\
 ${padline}\
-${alt_start}${_hbar}${_hbar}${alt_end}\
+${alt_start}${.fprompt.hbar}${.fprompt.hbar}${alt_end}\
 ${bold_on}(${dir})${allattr_off}\
-${alt_start}${_hbar}${_urcorner}${alt_end}"
+${alt_start}${.fprompt.hbar}${.fprompt.urcorner}${alt_end}"
 
     # If the terminal doesn't ignore a newline after the last column
     # and has automatic margin (e.g. cons25), a newline or carriage
@@ -323,18 +325,18 @@ ${alt_start}${_hbar}${_urcorner}${alt_end}"
     # newline and for good mesure, move the cursor to the left before
     # writing cr at the end of a line.
 
-    if ! tput $cap_auto_marg || tput $cap_ign_newline; then
+    if ! tput ${.fprompt.cap_auto_marg} || tput ${.fprompt.cap_ign_newline}; then
 	.sh.value=${.sh.value}$'\n'
     fi
 
     # Lower prompt using carriage return to display the right prompt.
     .sh.value="${.sh.value}\
-$(tput $cap_mvright $_rpos)\
-${_rprompt}\
-$(tput $cap_cursleft)$(tput $cap_carriage_return)\
-${alt_start}${_llcorner}${_hbar}${alt_end}\
-(${_lstatue}${alt_start}${_vbar}${alt_end}${_prompt})\
-${alt_start}${_hbar}${alt_end} "
+$(tput ${.fprompt.cap_mvright} $.fprompt.rpos)\
+${.fprompt.rprompt}\
+$(tput ${.fprompt.cap_cursleft})$(tput ${.fprompt.cap_carriage_return})\
+${alt_start}${.fprompt.llcorner}${.fprompt.hbar}${alt_end}\
+(${.fprompt.lstatue}${alt_start}${.fprompt.vbar}${alt_end}${.fprompt.prompt})\
+${alt_start}${.fprompt.hbar}${alt_end} "
 
     return $rc
 }
@@ -345,8 +347,8 @@ export GIT_PS1_SHOWUNTRACKEDFILES=yes
 # Continuation prompt
 function PS2.get
 {
-    _cont_prompt=yes
-    .sh.value="${alt_start}${_hbar}${_hbar}${alt_end} "
+    .fprompt.cont_prompt=yes
+    .sh.value="${alt_start}${.fprompt.hbar}${.fprompt.hbar}${alt_end} "
 }
 
 # Assoctiate a key  with an action.
@@ -371,9 +373,9 @@ function _keytrap
     eval "${Keytable[${.sh.edchar}]}"
 
     # Execute only if we're not on a continuation prompt
-    if [[ -z $_cont_prompt ]]; then
-        [[ $TERM == screen && ${.sh.edchar} == $'\r' ]] && _setscreen
-	_rpdisplay
+    if [[ -z ${.fprompt.cont_prompt} ]]; then
+        [[ $TERM == screen && ${.sh.edchar} == $'\r' ]] && .fprompt.setscreen
+	.fprompt.rpdisplay
     fi
 }
 trap _keytrap KEYBD
