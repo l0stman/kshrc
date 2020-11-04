@@ -18,12 +18,11 @@ function _pass_complete_entries
     export IFS=$'\n'
     typeset items
 
-    if [[ -d ${prefix}${cur} ]]; then
-        items=($(cd ${prefix}${cur}; compgen -P ${prefix}${cur} -fd))
+    if [[ -d "${prefix}${cur}" ]]; then
+        items=($(cd "${prefix}${cur}"; compgen -P "${prefix}${cur}" -fd))
     else
-        typeset w=$(basename "${cur}")
-        typeset d=${prefix}${cur%$w}
-        items=($(cd $d; compgen -P $d -fd $w))
+        typeset d="${prefix%/*}"
+        items=($(cd "${d}"; compgen -P "${d}/" -fd "${cur##*/}"))
     fi
     
     # Remember the value of the first item, to see if it is a directory. If
