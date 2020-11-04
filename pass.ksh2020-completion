@@ -17,11 +17,12 @@ function _pass_complete_entries
     typeset ifs=${IFS}
     export IFS=$'\n'
     typeset items
+    typeset path="${prefix}${cur}"
 
-    if [[ -d "${prefix}${cur}" ]]; then
-        items=($(cd "${prefix}${cur}"; compgen -P "${prefix}${cur}" -fd))
+    if [[ -d "${path}" ]]; then
+        items=($(cd "${path}"; compgen -P "${path}" -fd))
     else
-        typeset d="${prefix%/*}"
+        typeset d="${path%/*}"
         items=($(cd "${d}"; compgen -P "${d}/" -fd "${cur##*/}"))
     fi
     
