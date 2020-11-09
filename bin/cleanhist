@@ -1,5 +1,13 @@
 #!/bin/sh
 
-# Delete history files older than maxtime days.
-maxtime=1
-find -E ~ -maxdepth 1 -regex '.*/\.hist[0-9]+' -Btime +${maxtime} -delete
+# Delete history files older than mintime days.
+mintime=1
+
+case `uname` in
+    FreeBSD)
+        find -E ~ -maxdepth 1 -regex '.*/\.hist[0-9]+' -Btime +${mintime} \
+             -delete;;
+    Linux)
+        find ~ -regextype posix-extended -maxdepth 1 -regex '.*/\.hist[0-9]+' \
+             -ctime ${mintime} -delete;;
+esac
