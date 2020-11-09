@@ -32,12 +32,20 @@ function _pass_complete_entries
     # Use counter, can't use ${#items[@]} as we skip hidden directories
     typeset i=0 item
 
-    for item in ${items[@]}; do
+    for item in "${items[@]}"; do
+        [[ "${item}" =~ /\.[^/]*$ ]] && continue
+
 	# if there is a unique match, and it is a directory with one entry
 	# autocomplete the subentry as well (recursively)
 	if [[ ${#items[@]} -eq 1 && $autoexpand -eq 1 ]]; then
 	    while [[ -d $item ]]; do
 		typeset subitems=($(cd ${item}; compgen -P "${item}/" -fd))
+                typeset -a filtereditems
+                typeset item2
+                for item2 in "${subitems[@]}"; do
+                    [[ "${item2}" =~ /\.[^/]*$ ]] && continue
+                    filtereditems+=( "${item2}" )
+                done
 		if [[ ${#subitems[@]} -eq 1 ]]; then
 		    item="${subitems[0]}"
 		else
