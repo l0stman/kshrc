@@ -18,7 +18,7 @@ done
 
 if [ ! -f $CRONTAB ] || ! grep -E '/cleanhist$' $CRONTAB; then
     cat <<EOF >> $CRONTAB
-0	22	*	*	*	$BINDIR/cleanhist
+0	9,21	*	*	*	$BINDIR/cleanhist
 EOF
     crontab $CRONTAB
 else
