@@ -28,6 +28,10 @@ case ${SHELL##*/} in
         export ENV=$HOME/.shrc;;
 esac
 
+if uname -v | grep Ubuntu 2>&1 >/dev/null; then
+    export PATH=$PATH:/snap/bin
+fi
+
 if [ -x /usr/games/fortune ]; then
     fortune
 fi
